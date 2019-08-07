@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "./App.css";
-
 import _ from "lodash";
-import { createGame, tickGame, hits, runs, isGameOver } from "./engine";
+import { createGame, tickGame } from "./engine";
+import { hits, runs, isGameOver } from "./stats";
+import "./App.css";
 
 function GameScore({ game, onTick }) {
   const { awayInnings, homeInnings } = game;
