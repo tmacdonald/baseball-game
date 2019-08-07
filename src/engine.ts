@@ -8,36 +8,36 @@ export function createGame(): Game {
   };
 }
 
-export function tickGame(game: Game): Game {
-  return nextInning(game);
+export function simulateInning(game: Game): Game {
+  return simulateNextInning(game);
 }
 
 export function simulateGame(game: Game): Game {
   let simulatedGame = game;
   while (!isGameOver(simulatedGame)) {
-    simulatedGame = nextInning(simulatedGame);
+    simulatedGame = simulateNextInning(simulatedGame);
   }
   return simulatedGame;
 }
 
-function simulateInning(): Inning {
+function createInning(): Inning {
   const hits = Math.floor(Math.random() * 3);
   const runs = Math.floor(Math.random() * 1.4 * hits);
 
   return { hits, runs };
 }
 
-function nextInning(game: Game): Game {
+function simulateNextInning(game: Game): Game {
   const { awayInnings, homeInnings } = game;
   if (awayInnings.length === homeInnings.length) {
     return {
       ...game,
-      awayInnings: [...awayInnings, simulateInning()]
+      awayInnings: [...awayInnings, createInning()]
     };
   } else {
     return {
       ...game,
-      homeInnings: [...homeInnings, simulateInning()]
+      homeInnings: [...homeInnings, createInning()]
     };
   }
 }
