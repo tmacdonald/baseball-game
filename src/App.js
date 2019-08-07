@@ -2,25 +2,10 @@ import React, { useState } from "react";
 import "./App.css";
 
 import _ from "lodash";
+import { createGame, tickGame, hits, runs, isGameOver } from "./engine";
 
-function GameScore() {
-  const [awayInnings, setAwayInnings] = useState([]);
-  const [homeInnings, setHomeInnings] = useState([]);
-
-  function simulateInning() {
-    const hits = Math.floor(Math.random() * 3);
-    const runs = Math.floor(Math.random() * 1.4 * hits);
-
-    return { hits, runs };
-  }
-
-  function nextInning() {
-    if (awayInnings.length === homeInnings.length) {
-      setAwayInnings([...awayInnings, simulateInning()]);
-    } else {
-      setHomeInnings([...homeInnings, simulateInning()]);
-    }
-  }
+function GameScore({ game, onTick }) {
+  const { awayInnings, homeInnings } = game;
 
   function printInnings(teamInnings, numberOfInnings) {
     const printedTeamInnings = teamInnings.map(inning => (
@@ -33,28 +18,16 @@ function GameScore() {
     return [...printedTeamInnings, ...otherInnings];
   }
 
-  const awayHits =
-    awayInnings.map(inning => inning.hits).reduce((x, y) => x + y, 0) || 0;
-  const awayRuns =
-    awayInnings.map(inning => inning.runs).reduce((x, y) => x + y, 0) || 0;
-  const homeHits =
-    homeInnings.map(inning => inning.hits).reduce((x, y) => x + y, 0) || 0;
-  const homeRuns =
-    homeInnings.map(inning => inning.runs).reduce((x, y) => x + y, 0) || 0;
+  const awayHits = hits(awayInnings);
+  const awayRuns = runs(awayInnings);
+  const homeHits = hits(homeInnings);
+  const homeRuns = runs(homeInnings);
 
   const numberOfInnings = Math.max(
     9,
     Math.max(awayInnings.length, homeInnings.length)
   );
   const innings = _.range(1, numberOfInnings + 1);
-
-  const isGameOver =
-    (homeInnings.length >= 9 &&
-      homeInnings.length === awayInnings.length &&
-      homeRuns !== awayRuns) ||
-    (awayInnings.length === 9 &&
-      homeInnings.length === 8 &&
-      homeRuns > awayRuns);
 
   return (
     <>
@@ -84,7 +57,22 @@ function GameScore() {
           </tr>
         </tbody>
       </table>
-      <button disabled={isGameOver} onClick={nextInning}>
+    </>
+  );
+}
+
+function Game() {
+  const [game, setGame] = useState(createGame());
+  const gameIsOver = isGameOver(game);
+
+  function onTick() {
+    setGame(tickGame(game));
+  }
+
+  return (
+    <>
+      <GameScore game={game} />
+      <button disabled={gameIsOver} onClick={onTick}>
         Next
       </button>
     </>
@@ -94,7 +82,11 @@ function GameScore() {
 function App() {
   return (
     <div className="App">
-      <GameScore />
+      <Game />
+      <Game />
+      <Game />
+      <Game />
+      <Game />
     </div>
   );
 }
