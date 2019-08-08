@@ -1,6 +1,10 @@
 import AtBatState from "./models/AtBatState";
 
-export function strike(state: AtBatState): AtBatState {
+export interface AtBatAction {
+  (state: AtBatState): AtBatState;
+}
+
+export const strike: AtBatAction = function(state: AtBatState): AtBatState {
   const { strikes, balls, outs } = state;
 
   return {
@@ -9,7 +13,7 @@ export function strike(state: AtBatState): AtBatState {
     balls: strikes + 1 === 3 ? 0 : balls,
     outs: outs + (strikes + 1 === 3 ? 1 : 0)
   };
-}
+};
 
 export function walk(state: AtBatState): AtBatState {
   const { runs, bases } = state;
