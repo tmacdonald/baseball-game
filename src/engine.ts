@@ -8,36 +8,56 @@ export function createGame(): Game {
   };
 }
 
-export function simulateInning(game: Game): Game {
-  return simulateNextInning(game);
+interface Simulator {
+  hits(): number;
+  runs(hits: number): number;
 }
 
-export function simulateGame(game: Game): Game {
+const randomSimulator: Simulator = {
+  hits: function(): number {
+    return Math.floor(Math.random() * 3);
+  },
+  runs: function(hits: number): number {
+    return Math.floor(Math.random() * 1.4 * hits);
+  }
+};
+
+export function simulateInning(
+  game: Game,
+  simulator: Simulator = randomSimulator
+): Game {
+  return simulateNextInning(game, simulator);
+}
+
+export function simulateGame(
+  game: Game,
+  simulator: Simulator = randomSimulator
+): Game {
   let simulatedGame = game;
   while (!isGameOver(simulatedGame)) {
-    simulatedGame = simulateNextInning(simulatedGame);
+    simulatedGame = simulateNextInning(simulatedGame, simulator);
   }
   return simulatedGame;
 }
 
-function createInning(): Inning {
-  const hits = Math.floor(Math.random() * 3);
-  const runs = Math.floor(Math.random() * 1.4 * hits);
+function createInning(simulator: Simulator): Inning {
+  const hits = simulator.hits();
+  const runs = simulator.runs(hits);
 
   return { hits, runs };
 }
 
-function simulateNextInning(game: Game): Game {
+function simulateNextInning(game: Game, simulator: Simulator): Game {
   const { awayInnings, homeInnings } = game;
   if (awayInnings.length === homeInnings.length) {
     return {
       ...game,
-      awayInnings: [...awayInnings, createInning()]
+      awayInnings: [...awayInnings, createInning(simulator)]
     };
   } else {
     return {
       ...game,
-      homeInnings: [...homeInnings, createInning()]
+      homeInnings: [...homeInnings, createInning(simulator)]
     };
   }
 }
