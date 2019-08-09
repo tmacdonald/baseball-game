@@ -1,6 +1,8 @@
-import { Inning, Game } from "./models/Game";
+import Game from "./models/Game";
+import Inning from "./models/Inning";
 import AtBatState from "./models/AtBatState";
 import { walk, single, double, triple, homeRun, out, error } from "./actions";
+import { createState } from "./utils";
 import Action from "./actions/Action";
 
 import { isGameOver } from "./stats";
@@ -96,25 +98,18 @@ function simulateAction(state: AtBatState): AtBatState {
 }
 
 function createInning(): Inning {
-  let state: AtBatState = {
-    bases: { first: false, second: false, third: false },
-    runs: 0,
-    hits: 0,
-    balls: 0,
-    strikes: 0,
-    outs: 0,
-    errors: 0
+  let state = createState();
+
+  const inning: Inning = {
+    events: []
   };
 
   while (!isInningOver(state)) {
+    inning.events.push(state);
     state = simulateAction(state);
   }
 
-  return {
-    runs: state.runs,
-    hits: state.hits,
-    errors: state.errors
-  };
+  return inning;
 }
 
 function simulateNextInning(game: Game): Game {
