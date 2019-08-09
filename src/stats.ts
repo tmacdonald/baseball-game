@@ -15,10 +15,18 @@ export function isGameOver(game: Game): boolean {
   );
 }
 
+function sum(x: number, y: number) {
+  return x + y;
+}
+
 export function hits(innings: Inning[]): number {
-  return innings.map(inning => inning.hits).reduce((x, y) => x + y, 0) || 0;
+  return innings.map(inning => inning.hits).reduce(sum, 0) || 0;
 }
 
 export function runs(innings: Inning[]): number {
-  return innings.map(inning => inning.runs).reduce((x, y) => x + y, 0) || 0;
+  return innings.map(inning => inning.runs).reduce(sum, 0) || 0;
+}
+
+export function errors(innings: Inning[]): number {
+  return innings.map(inning => inning.errors).reduce(sum, 0) || 0;
 }

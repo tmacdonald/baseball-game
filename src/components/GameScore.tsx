@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { Game, Inning } from "../models/Game";
-import { hits, runs } from "../stats";
+import { hits, runs, errors } from "../stats";
 
 type GameScoreProps = {
   game: Game;
@@ -23,8 +23,10 @@ export default function GameScore({ game }: GameScoreProps) {
 
   const awayHits = hits(awayInnings);
   const awayRuns = runs(awayInnings);
+  const awayErrors = errors(homeInnings); // note the flip to homeInnings
   const homeHits = hits(homeInnings);
   const homeRuns = runs(homeInnings);
+  const homeErrors = errors(awayInnings);
 
   const numberOfInnings = Math.max(
     9,
@@ -50,13 +52,13 @@ export default function GameScore({ game }: GameScoreProps) {
             {printInnings(awayInnings, numberOfInnings)}
             <td>{awayRuns}</td>
             <td>{awayHits}</td>
-            <td>0</td>
+            <td>{awayErrors}</td>
           </tr>
           <tr>
             {printInnings(homeInnings, numberOfInnings)}
             <td>{homeRuns}</td>
             <td>{homeHits}</td>
-            <td>0</td>
+            <td>{homeErrors}</td>
           </tr>
         </tbody>
       </table>
