@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { createGame, simulateInning, simulateGame } from "../engine";
+import { createGame, simulateInning, simulateGame } from "../gameEngine";
 import { isGameOver } from "../stats";
 
 import GameScore from "./GameScore";

@@ -1,14 +1,7 @@
 import { Inning, Game } from "./models/Game";
 import AtBatState from "./models/AtBatState";
-import {
-  single,
-  double,
-  triple,
-  homeRun,
-  strike,
-  walk,
-  out
-} from "./stateEngine";
+import { walk, single, double, triple, homeRun, out } from "./actions";
+
 import { isGameOver } from "./stats";
 
 export function createGame(): Game {
@@ -18,34 +11,14 @@ export function createGame(): Game {
   };
 }
 
-interface Simulator {
-  hits(): number;
-  runs(hits: number): number;
+export function simulateInning(game: Game): Game {
+  return simulateNextInning(game);
 }
 
-const randomSimulator: Simulator = {
-  hits: function(): number {
-    return Math.floor(Math.random() * 3);
-  },
-  runs: function(hits: number): number {
-    return Math.floor(Math.random() * 1.4 * hits);
-  }
-};
-
-export function simulateInning(
-  game: Game,
-  simulator: Simulator = randomSimulator
-): Game {
-  return simulateNextInning(game, simulator);
-}
-
-export function simulateGame(
-  game: Game,
-  simulator: Simulator = randomSimulator
-): Game {
+export function simulateGame(game: Game): Game {
   let simulatedGame = game;
   while (!isGameOver(simulatedGame)) {
-    simulatedGame = simulateNextInning(simulatedGame, simulator);
+    simulatedGame = simulateNextInning(simulatedGame);
   }
   return simulatedGame;
 }
@@ -90,10 +63,11 @@ function simulateAtBat(state: AtBatState): AtBatState {
     console.log("triple");
     return triple(state);
   }
+  console.log("out");
   return out(state);
 }
 
-function createInning(simulator: Simulator): Inning {
+function createInning(): Inning {
   let state: AtBatState = {
     bases: { first: false, second: false, third: false },
     runs: 0,
@@ -114,19 +88,19 @@ function createInning(simulator: Simulator): Inning {
   };
 }
 
-function simulateNextInning(game: Game, simulator: Simulator): Game {
+function simulateNextInning(game: Game): Game {
   const { awayInnings, homeInnings } = game;
   if (awayInnings.length === homeInnings.length) {
     console.log(`top of ${awayInnings.length + 1}`);
     return {
       ...game,
-      awayInnings: [...awayInnings, createInning(simulator)]
+      awayInnings: [...awayInnings, createInning()]
     };
   } else {
     console.log(`bottom of ${homeInnings.length + 1}`);
     return {
       ...game,
-      homeInnings: [...homeInnings, createInning(simulator)]
+      homeInnings: [...homeInnings, createInning()]
     };
   }
 }
