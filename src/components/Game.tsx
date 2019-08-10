@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-import { createGame, simulateInning, simulateGame } from "../gameEngine";
+import {
+  createGame,
+  simulateInning,
+  simulateGame,
+  simulateAction
+} from "../gameEngine";
 import { isGameOver } from "../stats";
 
 import GameScore from "./GameScore";
@@ -12,6 +17,12 @@ export default function Game() {
   return (
     <>
       <GameScore game={game} />
+      <button
+        disabled={gameIsOver}
+        onClick={() => setGame(simulateAction(game))}
+      >
+        Simulate at bat
+      </button>
       <button
         disabled={gameIsOver}
         onClick={() => setGame(simulateInning(game))}

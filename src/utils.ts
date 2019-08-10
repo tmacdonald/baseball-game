@@ -1,5 +1,6 @@
 import AtBatState from "./models/AtBatState";
 import Bases from "./models/Bases";
+import Inning from "./models/Inning";
 
 export function createState(initialState = {}) {
   const defaultState: AtBatState = {
@@ -16,4 +17,11 @@ export function createState(initialState = {}) {
 
 export function bases(first: boolean, second: boolean, third: boolean): Bases {
   return { first, second, third };
+}
+
+export function inningState(inning: Inning): AtBatState {
+  if (inning.events.length === 0) {
+    return createState();
+  }
+  return inning.events[inning.events.length - 1];
 }

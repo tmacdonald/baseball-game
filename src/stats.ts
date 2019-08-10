@@ -1,7 +1,7 @@
 import Game from "./models/Game";
 import Inning from "./models/Inning";
 import AtBatState from "./models/AtBatState";
-import { createState } from "./utils";
+import { createState, inningState } from "./utils";
 
 export function isGameOver(game: Game): boolean {
   const { awayInnings, homeInnings } = game;
@@ -20,13 +20,6 @@ export function isGameOver(game: Game): boolean {
 
 function sum(x: number, y: number) {
   return x + y;
-}
-
-function inningState(inning: Inning): AtBatState {
-  if (inning.events.length === 0) {
-    return createState();
-  }
-  return inning.events[inning.events.length - 1];
 }
 
 export function inningRuns(inning: Inning): number {
