@@ -1,4 +1,7 @@
-import { Inning, Game } from "./models/Game";
+import Game from "./models/Game";
+import Inning from "./models/Inning";
+import AtBatState from "./models/AtBatState";
+import { createState, inningState } from "./utils";
 
 export function isGameOver(game: Game): boolean {
   const { awayInnings, homeInnings } = game;
@@ -19,14 +22,18 @@ function sum(x: number, y: number) {
   return x + y;
 }
 
+export function inningRuns(inning: Inning): number {
+  return inningState(inning).runs;
+}
+
 export function hits(innings: Inning[]): number {
-  return innings.map(inning => inning.hits).reduce(sum, 0) || 0;
+  return innings.map(inning => inningState(inning).hits).reduce(sum, 0) || 0;
 }
 
 export function runs(innings: Inning[]): number {
-  return innings.map(inning => inning.runs).reduce(sum, 0) || 0;
+  return innings.map(inning => inningRuns(inning)).reduce(sum, 0) || 0;
 }
 
 export function errors(innings: Inning[]): number {
-  return innings.map(inning => inning.errors).reduce(sum, 0) || 0;
+  return innings.map(inning => inningState(inning).errors).reduce(sum, 0) || 0;
 }

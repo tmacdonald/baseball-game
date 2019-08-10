@@ -1,10 +1,6 @@
-export interface Inning {
-  hits: number;
-  runs: number;
-  errors: number;
-}
+import Inning from "./Inning";
 
-export interface Game {
+export default interface Game {
   awayInnings: Inning[];
   homeInnings: Inning[];
 }

@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { Game, Inning } from "../models/Game";
-import { hits, runs, errors } from "../stats";
+import Game from "../models/Game";
+import Inning from "../models/Inning";
+import { hits, runs, errors, inningRuns } from "../stats";
 
 type GameScoreProps = {
   game: Game;
@@ -12,7 +13,7 @@ export default function GameScore({ game }: GameScoreProps) {
 
   function printInnings(teamInnings: Inning[], numberOfInnings: number) {
     const printedTeamInnings = teamInnings.map(inning => (
-      <td>{inning.runs}</td>
+      <td>{inningRuns(inning)}</td>
     ));
     const otherInnings = _.range(
       1,
