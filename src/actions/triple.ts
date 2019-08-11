@@ -1,7 +1,7 @@
 import AtBatState from "../models/AtBatState";
 
 export default function triple(state: AtBatState): AtBatState {
-  const { runs, hits, bases } = state;
+  const { runs, triples, bases } = state;
 
   return {
     ...state,
@@ -10,7 +10,7 @@ export default function triple(state: AtBatState): AtBatState {
       second: false,
       third: true
     },
-    hits: hits + 1,
+    triples: triples + 1,
     runs:
       runs +
       (bases.third ? 1 : 0) +

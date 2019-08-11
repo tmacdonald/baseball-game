@@ -1,7 +1,7 @@
 import AtBatState from "../models/AtBatState";
 
 export default function homeRun(state: AtBatState): AtBatState {
-  const { runs, hits, bases } = state;
+  const { runs, homeRuns, bases } = state;
 
   return {
     ...state,
@@ -10,7 +10,7 @@ export default function homeRun(state: AtBatState): AtBatState {
       second: false,
       third: false
     },
-    hits: hits + 1,
+    homeRuns: homeRuns + 1,
     runs:
       runs +
       1 +

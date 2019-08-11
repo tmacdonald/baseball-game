@@ -6,7 +6,10 @@ export function createState(initialState = {}) {
   const defaultState: AtBatState = {
     bases: { first: false, second: false, third: false },
     runs: 0,
-    hits: 0,
+    singles: 0,
+    doubles: 0,
+    triples: 0,
+    homeRuns: 0,
     errors: 0,
     outs: 0,
     balls: 0,

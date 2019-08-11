@@ -1,4 +1,5 @@
 import Inning from "./models/Inning";
+import AtBatState from "./models/AtBatState";
 import { inningState } from "./utils";
 
 function sum(x: number, y: number) {
@@ -9,8 +10,17 @@ export function inningRuns(inning: Inning): number {
   return inningState(inning).runs;
 }
 
+function combineHits(state: AtBatState): number {
+  return state.singles + state.doubles + state.triples + state.homeRuns;
+}
+
 export function hits(innings: Inning[]): number {
-  return innings.map(inning => inningState(inning).hits).reduce(sum, 0) || 0;
+  return (
+    innings
+      .map(inning => inningState(inning))
+      .map(combineHits)
+      .reduce(sum, 0) || 0
+  );
 }
 
 export function runs(innings: Inning[]): number {

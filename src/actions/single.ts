@@ -1,7 +1,7 @@
 import AtBatState from "../models/AtBatState";
 
 export default function single(state: AtBatState): AtBatState {
-  const { runs, hits, bases } = state;
+  const { runs, singles, bases } = state;
 
   return {
     ...state,
@@ -10,7 +10,7 @@ export default function single(state: AtBatState): AtBatState {
       second: bases.first,
       third: bases.second
     },
-    hits: hits + 1,
+    singles: singles + 1,
     runs: runs + (bases.third ? 1 : 0),
     balls: 0,
     strikes: 0
