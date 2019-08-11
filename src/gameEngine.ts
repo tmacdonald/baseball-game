@@ -11,8 +11,10 @@ function log(message: any) {
   //console.log(message);
 }
 
-export function createGame(): Game {
+export function createGame(awayTeam: string, homeTeam: string): Game {
   return {
+    awayTeam,
+    homeTeam,
     states: []
   };
 }
@@ -53,6 +55,7 @@ function massageGame(game: Game): Game {
     if (state.outs === 3) {
       if (state.team === Team.Away) {
         return {
+          ...game,
           states: [
             ...game.states,
             createState({
@@ -63,6 +66,7 @@ function massageGame(game: Game): Game {
         };
       } else {
         return {
+          ...game,
           states: [
             ...game.states,
             createState({
@@ -75,6 +79,7 @@ function massageGame(game: Game): Game {
     }
   } else {
     return {
+      ...game,
       states: [createState({ team: Team.Away, inning: 1 })]
     };
   }

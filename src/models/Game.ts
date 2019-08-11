@@ -1,8 +1,7 @@
-import Inning from "./Inning";
 import { GameState } from "./GameState";
 
 export default interface Game {
-  // awayInnings: Inning[];
-  // homeInnings: Inning[];
+  awayTeam: string;
+  homeTeam: string;
   states: GameState[];
 }

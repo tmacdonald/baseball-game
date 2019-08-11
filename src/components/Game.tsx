@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   createGame,
@@ -12,18 +12,29 @@ import GameScore from "./GameScore";
 
 import createDiceAction from "../DiceActionCreator";
 
-function useInterval(callback: (...args: any[]) => void, duration: number) {
-  let interval: NodeJS.Timeout;
+function useInterval(callback: (...args: any[]) => void, delay: number) {
+  const savedCallback = useRef<(...args: any[]) => void>();
+
   useEffect(() => {
-    interval = setInterval(callback, duration);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [callback, duration]);
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
+    }
+
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
 }
 
 export default function Game() {
-  const [game, setGame] = useState(createGame());
+  const [game, setGame] = useState(createGame("Orioles", "Bluejays"));
   const [simulating, setSimulating] = useState(false);
   const [ms, setMs] = useState(1000);
   const gameIsOver = isGameOver(game);
