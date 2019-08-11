@@ -1,5 +1,5 @@
 import Inning from "./models/Inning";
-import AtBatState from "./models/AtBatState";
+import GameState from "./models/GameState";
 import { inningState } from "./utils";
 
 function sum(x: number, y: number) {
@@ -10,7 +10,7 @@ export function inningRuns(inning: Inning): number {
   return inningState(inning).runs;
 }
 
-function combineHits(state: AtBatState): number {
+function combineHits(state: GameState): number {
   return state.singles + state.doubles + state.triples + state.homeRuns;
 }
 

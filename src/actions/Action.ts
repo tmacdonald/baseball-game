@@ -1,5 +1,5 @@
-import AtBatState from "../models/AtBatState";
+import GameState from "../models/GameState";
 
 export default interface Action {
-  (state: AtBatState): AtBatState;
+  (state: GameState): GameState;
 }

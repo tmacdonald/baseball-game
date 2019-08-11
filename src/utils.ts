@@ -1,9 +1,9 @@
-import AtBatState from "./models/AtBatState";
+import GameState from "./models/GameState";
 import Bases from "./models/Bases";
 import Inning from "./models/Inning";
 
 export function createState(initialState = {}) {
-  const defaultState: AtBatState = {
+  const defaultState: GameState = {
     bases: { first: false, second: false, third: false },
     runs: 0,
     singles: 0,
@@ -23,7 +23,7 @@ export function bases(first: boolean, second: boolean, third: boolean): Bases {
   return { first, second, third };
 }
 
-export function inningState(inning: Inning): AtBatState {
+export function inningState(inning: Inning): GameState {
   if (inning.length === 0) {
     return createState();
   }

@@ -10,12 +10,12 @@ it("should clear the runners", () => {
   expect(newState.runs).toEqual(state.runs + 1);
 });
 
-it("should increase hits", () => {
+it("should increase homeRuns", () => {
   const state = createState();
 
   const newState = homeRun(state);
 
-  expect(newState.hits).toEqual(state.hits + 1);
+  expect(newState.homeRuns).toEqual(state.homeRuns + 1);
 });
 
 it("should score a runner from first", () => {

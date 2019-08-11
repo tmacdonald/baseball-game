@@ -1,13 +1,13 @@
 import Game from "./models/Game";
 import Inning from "./models/Inning";
-import AtBatState from "./models/AtBatState";
+import GameState from "./models/GameState";
 import { createState } from "./utils";
 import ActionCreator from "./actions/ActionCreator";
 
 import { runs } from "./stats";
 
 function log(message: any) {
-  console.log(message);
+  //console.log(message);
 }
 
 export function createGame(): Game {
@@ -82,7 +82,7 @@ function isAwayTeamBatting(game: Game): boolean {
   return game.awayInnings.length > game.homeInnings.length;
 }
 
-export function currentState(game: Game): AtBatState {
+export function currentState(game: Game): GameState {
   if (game.homeInnings.length === 0 && game.awayInnings.length === 0) {
     return createState();
   }
@@ -152,9 +152,9 @@ function isInningOver(inning: Inning): boolean {
 }
 
 function _simulateAction(
-  state: AtBatState,
+  state: GameState,
   createAction: ActionCreator
-): AtBatState {
+): GameState {
   const action = createAction();
   log(action.name);
 

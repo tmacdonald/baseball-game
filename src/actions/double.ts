@@ -1,6 +1,6 @@
-import AtBatState from "../models/AtBatState";
+import GameState from "../models/GameState";
 
-export default function double(state: AtBatState): AtBatState {
+export default function double(state: GameState): GameState {
   const { runs, doubles, bases } = state;
 
   return {

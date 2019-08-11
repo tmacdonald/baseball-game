@@ -1,6 +1,6 @@
 import Bases from "./Bases";
 
-type CurrentState = {
+type GameState = {
   bases: Bases;
   runs: number;
   singles: number;
@@ -14,4 +14,4 @@ type CurrentState = {
   balls: number;
 };
 
-export default CurrentState;
+export default GameState;

@@ -1,5 +1,5 @@
-import AtBatState from "./AtBatState";
+import GameState from "./GameState";
 
-type Inning = AtBatState[];
+type Inning = GameState[];
 
 export default Inning;

@@ -9,12 +9,12 @@ it("should put a runner on second base", () => {
   expect(newState.bases).toEqual(bases(false, true, false));
 });
 
-it("should increase hits", () => {
+it("should increase doubles", () => {
   const state = createState();
 
   const newState = double(state);
 
-  expect(newState.hits).toEqual(state.hits + 1);
+  expect(newState.doubles).toEqual(state.doubles + 1);
 });
 
 it("should move a runner from first to third", () => {

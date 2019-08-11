@@ -1,7 +1,7 @@
-import AtBatState from "../models/AtBatState";
+import GameState from "../models/GameState";
 import Action from "./Action";
 
-const strike: Action = function(state: AtBatState): AtBatState {
+const strike: Action = function(state: GameState): GameState {
   const { strikes, balls, outs } = state;
 
   return {
