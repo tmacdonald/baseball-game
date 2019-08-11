@@ -17,8 +17,7 @@ export default function GameScore({ game }: GameScoreProps) {
       <td>{inningRuns(inning)}</td>
     ));
     const otherInnings = _.range(
-      1,
-      Math.max(1, numberOfInnings + 1 - teamInnings.length)
+      Math.max(0, numberOfInnings - teamInnings.length)
     ).map(() => <td>-</td>);
     return [...printedTeamInnings, ...otherInnings];
   }
