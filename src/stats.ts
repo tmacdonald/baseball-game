@@ -1,22 +1,5 @@
-import Game from "./models/Game";
 import Inning from "./models/Inning";
-import AtBatState from "./models/AtBatState";
-import { createState, inningState } from "./utils";
-
-export function isGameOver(game: Game): boolean {
-  const { awayInnings, homeInnings } = game;
-  const homeRuns = runs(homeInnings);
-  const awayRuns = runs(awayInnings);
-
-  return (
-    (homeInnings.length >= 9 &&
-      homeInnings.length === awayInnings.length &&
-      homeRuns !== awayRuns) ||
-    (awayInnings.length === 9 &&
-      homeInnings.length === 8 &&
-      homeRuns > awayRuns)
-  );
-}
+import { inningState } from "./utils";
 
 function sum(x: number, y: number) {
   return x + y;

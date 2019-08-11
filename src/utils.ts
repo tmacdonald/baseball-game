@@ -20,8 +20,8 @@ export function bases(first: boolean, second: boolean, third: boolean): Bases {
 }
 
 export function inningState(inning: Inning): AtBatState {
-  if (inning.events.length === 0) {
+  if (inning.length === 0) {
     return createState();
   }
-  return inning.events[inning.events.length - 1];
+  return inning[inning.length - 1];
 }

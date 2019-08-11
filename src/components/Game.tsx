@@ -4,11 +4,13 @@ import {
   createGame,
   simulateInning,
   simulateGame,
-  simulateAction
+  simulateAction,
+  isGameOver
 } from "../gameEngine";
-import { isGameOver } from "../stats";
 
 import GameScore from "./GameScore";
+
+import createDiceAction from "../DiceActionCreator";
 
 export default function Game() {
   const [game, setGame] = useState(createGame());
@@ -19,7 +21,7 @@ export default function Game() {
       <GameScore game={game} />
       <button
         disabled={gameIsOver}
-        onClick={() => setGame(simulateAction(game))}
+        onClick={() => setGame(simulateAction(game, createDiceAction))}
       >
         Simulate at bat
       </button>
