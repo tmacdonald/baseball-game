@@ -1,6 +1,13 @@
 import Bases from "./Bases";
 
-type GameState = {
+export enum Team {
+  Away,
+  Home
+}
+
+export type GameState = {
+  inning: number;
+  team: Team;
   bases: Bases;
   runs: number;
   singles: number;
@@ -13,5 +20,3 @@ type GameState = {
   strikes: number;
   balls: number;
 };
-
-export default GameState;

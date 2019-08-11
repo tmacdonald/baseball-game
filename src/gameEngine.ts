@@ -1,8 +1,9 @@
 import Game from "./models/Game";
 import Inning from "./models/Inning";
-import GameState from "./models/GameState";
+import { GameState, Team } from "./models/GameState";
 import { createState } from "./utils";
 import ActionCreator from "./actions/ActionCreator";
+import _ from "lodash";
 
 import { runs } from "./stats";
 
@@ -12,13 +13,22 @@ function log(message: any) {
 
 export function createGame(): Game {
   return {
-    awayInnings: [],
-    homeInnings: []
+    states: []
   };
 }
 
+export function innings(game: Game) {
+  const awayStates = game.states.filter(state => state.team === Team.Away);
+  const homeStates = game.states.filter(state => state.team === Team.Home);
+
+  const awayInnings = _.values(_.groupBy(awayStates, "inning"));
+  const homeInnings = _.values(_.groupBy(homeStates, "inning"));
+
+  return { awayInnings, homeInnings };
+}
+
 export function isGameOver(game: Game): boolean {
-  const { awayInnings, homeInnings } = game;
+  const { awayInnings, homeInnings } = innings(game);
   const homeRuns = runs(homeInnings);
   const awayRuns = runs(awayInnings);
 
@@ -28,114 +38,76 @@ export function isGameOver(game: Game): boolean {
 
   return (
     (awayInnings.length >= 9 &&
-      isInningOver(last(awayInnings)) &&
+      isInningOver(_.last(awayInnings)) &&
       homeRuns > awayRuns) ||
     (awayInnings.length === homeInnings.length &&
-      isInningOver(last(homeInnings)) &&
+      isInningOver(_.last(homeInnings)) &&
       awayRuns > homeRuns)
   );
 }
 
-function createInning(): Inning {
-  return [createState()];
-}
-
-function last<T>(array: T[]): T {
-  return array[array.length - 1];
-}
-
 function massageGame(game: Game): Game {
-  // if appropriate, add a new inning
-  const { awayInnings, homeInnings } = game;
+  const state = _.last(game.states);
 
-  if (awayInnings.length === 0 && homeInnings.length === 0) {
-    log("top of 1");
+  if (state !== undefined) {
+    if (state.outs === 3) {
+      if (state.team === Team.Away) {
+        return {
+          states: [
+            ...game.states,
+            createState({
+              team: Team.Home,
+              inning: state.inning
+            })
+          ]
+        };
+      } else {
+        return {
+          states: [
+            ...game.states,
+            createState({
+              team: Team.Away,
+              inning: state.inning + 1
+            })
+          ]
+        };
+      }
+    }
+  } else {
     return {
-      ...game,
-      awayInnings: [[createState()]]
+      states: [createState({ team: Team.Away, inning: 1 })]
     };
   }
-  if (
-    awayInnings.length > homeInnings.length &&
-    isInningOver(last(awayInnings))
-  ) {
-    log(`bottom of ${awayInnings.length}`);
-    return {
-      ...game,
-      homeInnings: [...homeInnings, [createState()]]
-    };
-  }
-  if (
-    awayInnings.length === homeInnings.length &&
-    isInningOver(last(homeInnings))
-  ) {
-    log(`top of ${homeInnings.length + 1}`);
-    return {
-      ...game,
-      awayInnings: [...awayInnings, [createState()]]
-    };
-  }
+
   return game;
-}
-
-function isAwayTeamBatting(game: Game): boolean {
-  return game.awayInnings.length > game.homeInnings.length;
-}
-
-export function currentState(game: Game): GameState {
-  if (game.homeInnings.length === 0 && game.awayInnings.length === 0) {
-    return createState();
-  }
-  if (isAwayTeamBatting(game)) {
-    return last(last(game.awayInnings));
-  }
-  return last(last(game.homeInnings));
 }
 
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
   const massagedGame = massageGame(game);
 
-  if (isAwayTeamBatting(massagedGame)) {
-    const { awayInnings } = massagedGame;
-    const inning = awayInnings[awayInnings.length - 1];
-    const otherInnings = awayInnings.slice(0, awayInnings.length - 1);
+  const state = _.last(massagedGame.states);
 
-    const state = inning[inning.length - 1];
+  if (state !== undefined) {
     const nextState = _simulateAction(state, createAction);
-
     return {
       ...massagedGame,
-      awayInnings: [...otherInnings, [...inning, nextState]]
+      states: [...massagedGame.states, nextState]
     };
   }
 
-  const { homeInnings } = massagedGame;
-  const inning = homeInnings[homeInnings.length - 1];
-  const otherInnings = homeInnings.slice(0, homeInnings.length - 1);
-
-  const state = inning[inning.length - 1];
-  const nextState = _simulateAction(state, createAction);
-
-  return {
-    ...massagedGame,
-    homeInnings: [...otherInnings, [...inning, nextState]]
-  };
+  return game;
 }
 
 export function simulateInning(game: Game, createAction: ActionCreator): Game {
-  let simulatedGame = game;
+  let nextGame = game;
+  let lastState: GameState | undefined;
 
-  if (isAwayTeamBatting(simulatedGame)) {
-    do {
-      simulatedGame = simulateAction(simulatedGame, createAction);
-    } while (!isInningOver(last(simulatedGame.homeInnings)));
-  } else {
-    do {
-      simulatedGame = simulateAction(simulatedGame, createAction);
-    } while (!isInningOver(last(simulatedGame.awayInnings)));
-  }
+  do {
+    nextGame = simulateAction(nextGame, createAction);
+    lastState = _.last(nextGame.states);
+  } while (lastState !== undefined && lastState.outs !== 3);
 
-  return simulatedGame;
+  return nextGame;
 }
 
 export function simulateGame(game: Game, createAction: ActionCreator): Game {
@@ -146,7 +118,10 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
   return simulatedGame;
 }
 
-function isInningOver(inning: Inning): boolean {
+function isInningOver(inning: Inning | undefined): boolean {
+  if (inning === undefined) {
+    return false;
+  }
   const mostRecentAction = inning[inning.length - 1];
   return mostRecentAction.outs === 3;
 }

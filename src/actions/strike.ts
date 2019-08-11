@@ -1,4 +1,4 @@
-import GameState from "../models/GameState";
+import { GameState } from "../models/GameState";
 import Action from "./Action";
 
 const strike: Action = function(state: GameState): GameState {

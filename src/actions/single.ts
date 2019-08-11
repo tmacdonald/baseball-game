@@ -1,4 +1,4 @@
-import GameState from "../models/GameState";
+import { GameState } from "../models/GameState";
 
 export default function single(state: GameState): GameState {
   const { runs, singles, bases } = state;

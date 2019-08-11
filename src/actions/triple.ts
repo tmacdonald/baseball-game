@@ -1,4 +1,4 @@
-import GameState from "../models/GameState";
+import { GameState } from "../models/GameState";
 
 export default function triple(state: GameState): GameState {
   const { runs, triples, bases } = state;

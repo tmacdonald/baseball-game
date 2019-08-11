@@ -1,5 +1,5 @@
 import Inning from "./models/Inning";
-import GameState from "./models/GameState";
+import { GameState } from "./models/GameState";
 import { inningState } from "./utils";
 
 function sum(x: number, y: number) {

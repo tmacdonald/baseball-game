@@ -1,32 +1,45 @@
-import { simulateAction, createGame, isGameOver } from "./gameEngine";
+import { simulateAction, createGame, isGameOver, innings } from "./gameEngine";
 import { out, homeRun } from "./actions";
-import { createState } from "./utils";
+import Action from "./actions/Action";
 import _ from "lodash";
 
 const halfInnings = (innings: number) => 3 * innings;
 const fullInnings = (innings: number) => 3 * 2 * innings;
 
-it("should create an away inning after the first action", () => {
-  const game = createGame();
-  const createAction = () => out;
-
-  const nextGame = simulateAction(game, createAction);
-
-  expect(nextGame.homeInnings).toEqual([]);
-  expect(nextGame.awayInnings.length).toEqual(game.awayInnings.length + 1);
-});
-
-it("should create a home inning if the away inning is over", () => {
-  const createAction = () => out;
-
-  const game = _.range(1, 3 + 1).reduce(
-    (game, _) => simulateAction(game, createAction),
+function playGameActions(actions: Action[]) {
+  return actions.reduce(
+    (game, action) => simulateAction(game, () => action),
     createGame()
   );
+}
 
-  const nextGame = simulateAction(game, createAction);
+describe("innings", () => {
+  it("should have no innings at the beginning of the game", () => {
+    const game = createGame();
 
-  expect(nextGame.homeInnings.length).toEqual(game.homeInnings.length + 1);
+    const { awayInnings, homeInnings } = innings(game);
+
+    expect(awayInnings.length).toEqual(0);
+    expect(homeInnings.length).toEqual(0);
+  });
+
+  it("should have 1 away inning after one out", () => {
+    const game = playGameActions([out]);
+
+    const { awayInnings, homeInnings } = innings(game);
+
+    expect(awayInnings.length).toEqual(1);
+    expect(homeInnings.length).toEqual(0);
+  });
+
+  it("should have 1 away inning and 1 home inning after four outs", () => {
+    const game = playGameActions(_.range(halfInnings(1) + 1).map(() => out));
+
+    const { awayInnings, homeInnings } = innings(game);
+
+    expect(awayInnings.length).toEqual(1);
+    expect(homeInnings.length).toEqual(1);
+  });
 });
 
 describe("isGameOver", () => {
