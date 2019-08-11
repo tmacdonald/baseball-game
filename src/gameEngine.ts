@@ -82,6 +82,16 @@ function isAwayTeamBatting(game: Game): boolean {
   return game.awayInnings.length > game.homeInnings.length;
 }
 
+export function currentState(game: Game): AtBatState {
+  if (game.homeInnings.length === 0 && game.awayInnings.length === 0) {
+    return createState();
+  }
+  if (isAwayTeamBatting(game)) {
+    return last(last(game.awayInnings));
+  }
+  return last(last(game.homeInnings));
+}
+
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
   const massagedGame = massageGame(game);
 

@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import Game from "../models/Game";
 import Inning from "../models/Inning";
+import { currentState } from "../gameEngine";
 import { hits, runs, errors, inningRuns } from "../stats";
 
 type GameScoreProps = {
@@ -21,6 +22,8 @@ export default function GameScore({ game }: GameScoreProps) {
     ).map(() => <td>-</td>);
     return [...printedTeamInnings, ...otherInnings];
   }
+
+  const gameState = currentState(game);
 
   const awayHits = hits(awayInnings);
   const awayRuns = runs(awayInnings);
@@ -63,6 +66,7 @@ export default function GameScore({ game }: GameScoreProps) {
           </tr>
         </tbody>
       </table>
+      <pre>{JSON.stringify(gameState, null, 2)}</pre>
     </>
   );
 }
