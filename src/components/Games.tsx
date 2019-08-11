@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import useInterval from "../useInterval";
 
 import {
@@ -13,34 +14,56 @@ import GameScore from "./GameScore";
 
 import createDiceAction from "../DiceActionCreator";
 
+const initialGames = [
+  createGame("Orioles", "Blue Jays"),
+  createGame("Red Sox", "Yankees"),
+  createGame("Tigers", "Indians"),
+  createGame("White Sox", "Twins"),
+  createGame("Cubs", "Mets"),
+  createGame("Braves", "Rays")
+];
+
 export default function Game() {
-  const [game, setGame] = useState(createGame("Orioles", "Bluejays"));
+  const [games, setGames] = useState(initialGames);
   const [simulating, setSimulating] = useState(false);
   const [ms, setMs] = useState(1000);
-  const gameIsOver = isGameOver(game);
   useInterval(() => {
-    if (!gameIsOver && simulating) {
-      setGame(simulateAction(game, createDiceAction));
+    if (simulating) {
+      setGames(
+        games.map(game => {
+          if (!isGameOver(game)) {
+            return simulateAction(game, createDiceAction);
+          }
+          return game;
+        })
+      );
     }
   }, ms);
 
+  function simulateAtBat() {
+    setGames(
+      games.map(game => {
+        if (!isGameOver(game)) {
+          return simulateAction(game, createDiceAction);
+        }
+        return game;
+      })
+    );
+  }
+
   return (
     <>
-      <GameScore game={game} />
-      <button
-        disabled={gameIsOver}
-        onClick={() => setGame(simulateAction(game, createDiceAction))}
-      >
-        Simulate at bat
-      </button>
-      <button
+      {games.map(game => (
+        <GameScore game={game} />
+      ))}
+      <button onClick={simulateAtBat}>Simulate at bat</button>
+      {/* <button
         disabled={gameIsOver}
         onClick={() => setGame(simulateInning(game, createDiceAction))}
       >
         Simulate Inning
-      </button>
+      </button> */}
       <button
-        disabled={gameIsOver}
         //onClick={() => setGame(simulateGame(game, createDiceAction))}
         onClick={() => setSimulating(true)}
       >

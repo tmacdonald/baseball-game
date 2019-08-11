@@ -125,7 +125,7 @@ export default function GameScore({ game }: GameScoreProps) {
           </tr>
         </tbody>
       </table>
-      <GameLog game={game} />
+      {/* <GameLog game={game} /> */}
     </>
   );
 }
