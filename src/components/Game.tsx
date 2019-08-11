@@ -27,11 +27,14 @@ export default function Game() {
       </button>
       <button
         disabled={gameIsOver}
-        onClick={() => setGame(simulateInning(game))}
+        onClick={() => setGame(simulateInning(game, createDiceAction))}
       >
         Simulate Inning
       </button>
-      <button disabled={gameIsOver} onClick={() => setGame(simulateGame(game))}>
+      <button
+        disabled={gameIsOver}
+        onClick={() => setGame(simulateGame(game, createDiceAction))}
+      >
         Simulate Game
       </button>
     </>

@@ -30,6 +30,27 @@ it("should create a home inning if the away inning is over", () => {
 });
 
 describe("isGameOver", () => {
+  it("should not consider a game that hasn't started as over", () => {
+    const game = createGame();
+
+    expect(isGameOver(game)).toBe(false);
+  });
+
+  it("should not consider a game over after 4 innings if the away team is winning", () => {
+    const actions = [
+      ..._.range(fullInnings(3)).map(() => () => out),
+      () => homeRun,
+      ..._.range(fullInnings(1)).map(() => () => out)
+    ];
+
+    const game = actions.reduce(
+      (game, action) => simulateAction(game, action),
+      createGame()
+    );
+
+    expect(isGameOver(game)).toBe(false);
+  });
+
   it("should consider a game over if 8 1/2 innings are played and the home team is winning", () => {
     const actions = [
       ..._.range(halfInnings(1)).map(() => () => out), // 3 outs for the away team in the top of the 1st

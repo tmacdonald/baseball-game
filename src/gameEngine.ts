@@ -1,10 +1,14 @@
 import Game from "./models/Game";
 import Inning from "./models/Inning";
 import AtBatState from "./models/AtBatState";
-import { createState, inningState } from "./utils";
+import { createState } from "./utils";
 import ActionCreator from "./actions/ActionCreator";
 
 import { runs } from "./stats";
+
+function log(message: any) {
+  console.log(message);
+}
 
 export function createGame(): Game {
   return {
@@ -17,6 +21,10 @@ export function isGameOver(game: Game): boolean {
   const { awayInnings, homeInnings } = game;
   const homeRuns = runs(homeInnings);
   const awayRuns = runs(awayInnings);
+
+  if (awayInnings.length < 9) {
+    return false;
+  }
 
   return (
     (awayInnings.length >= 9 &&
@@ -41,7 +49,7 @@ function massageGame(game: Game): Game {
   const { awayInnings, homeInnings } = game;
 
   if (awayInnings.length === 0 && homeInnings.length === 0) {
-    //console.log("top of 1");
+    log("top of 1");
     return {
       ...game,
       awayInnings: [[createState()]]
@@ -51,7 +59,7 @@ function massageGame(game: Game): Game {
     awayInnings.length > homeInnings.length &&
     isInningOver(last(awayInnings))
   ) {
-    //console.log(`bottom of ${awayInnings.length}`);
+    log(`bottom of ${awayInnings.length}`);
     return {
       ...game,
       homeInnings: [...homeInnings, [createState()]]
@@ -61,7 +69,7 @@ function massageGame(game: Game): Game {
     awayInnings.length === homeInnings.length &&
     isInningOver(last(homeInnings))
   ) {
-    //console.log(`top of ${homeInnings.length + 1}`);
+    log(`top of ${homeInnings.length + 1}`);
     return {
       ...game,
       awayInnings: [...awayInnings, [createState()]]
@@ -104,14 +112,26 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
   };
 }
 
-export function simulateInning(game: Game): Game {
-  return simulateNextInning(game);
+export function simulateInning(game: Game, createAction: ActionCreator): Game {
+  let simulatedGame = game;
+
+  if (isAwayTeamBatting(simulatedGame)) {
+    do {
+      simulatedGame = simulateAction(simulatedGame, createAction);
+    } while (!isInningOver(last(simulatedGame.homeInnings)));
+  } else {
+    do {
+      simulatedGame = simulateAction(simulatedGame, createAction);
+    } while (!isInningOver(last(simulatedGame.awayInnings)));
+  }
+
+  return simulatedGame;
 }
 
-export function simulateGame(game: Game): Game {
+export function simulateGame(game: Game, createAction: ActionCreator): Game {
   let simulatedGame = game;
   while (!isGameOver(simulatedGame)) {
-    simulatedGame = simulateNextInning(simulatedGame);
+    simulatedGame = simulateAction(simulatedGame, createAction);
   }
   return simulatedGame;
 }
@@ -126,40 +146,10 @@ function _simulateAction(
   createAction: ActionCreator
 ): AtBatState {
   const action = createAction();
-  //console.log(action.name);
+  log(action.name);
 
   const newState = action(state);
-  //console.log(newState);
+  log(newState);
 
   return newState;
-}
-
-function _createInning(createAction: ActionCreator): Inning {
-  let state = createState();
-
-  const inning: Inning = [];
-
-  while (!isInningOver(inning)) {
-    inning.push(state);
-    state = _simulateAction(state, createAction);
-  }
-
-  return inning;
-}
-
-function simulateNextInning(game: Game): Game {
-  const { awayInnings, homeInnings } = game;
-  if (awayInnings.length === homeInnings.length) {
-    //console.log(`top of ${awayInnings.length + 1}`);
-    return {
-      ...game,
-      awayInnings: [...awayInnings, createInning()]
-    };
-  } else {
-    //console.log(`bottom of ${homeInnings.length + 1}`);
-    return {
-      ...game,
-      homeInnings: [...homeInnings, createInning()]
-    };
-  }
 }
