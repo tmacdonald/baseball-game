@@ -7,6 +7,7 @@ type CurrentState = {
   doubles: number;
   triples: number;
   homeRuns: number;
+  walks: number;
   errors: number;
   outs: number;
   strikes: number;

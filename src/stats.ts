@@ -17,7 +17,7 @@ function combineHits(state: AtBatState): number {
 export function hits(innings: Inning[]): number {
   return (
     innings
-      .map(inning => inningState(inning))
+      .map(inningState)
       .map(combineHits)
       .reduce(sum, 0) || 0
   );

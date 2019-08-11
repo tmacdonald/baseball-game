@@ -10,6 +10,7 @@ export function createState(initialState = {}) {
     doubles: 0,
     triples: 0,
     homeRuns: 0,
+    walks: 0,
     errors: 0,
     outs: 0,
     balls: 0,
