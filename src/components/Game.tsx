@@ -12,14 +12,13 @@ import {
 import GameScore from "./GameScore";
 
 import createDiceAction from "../DiceActionCreator";
+import ScrubbedGame from "./ScrubbedGame";
 
 export default function Game() {
   const [game, setGame] = useState(createGame("Orioles", "Bluejays"));
-  const [scrubbedGame, setScrubbedGame] = useState(game);
+
   const [simulating, setSimulating] = useState(false);
   const [ms, setMs] = useState(1000);
-
-  const [scrub, setScrub] = useState(0);
 
   const gameIsOver = isGameOver(game);
 
@@ -27,29 +26,20 @@ export default function Game() {
     if (!gameIsOver && simulating) {
       const nextGame = simulateAction(game, createDiceAction);
       setGame(nextGame);
-      setScrubbedGame(nextGame);
-      setScrub(nextGame.states.length);
     }
   }, ms);
 
   function simulateAtBat() {
     const nextGame = simulateAction(game, createDiceAction);
     setGame(nextGame);
-    setScrubbedGame(nextGame);
-    setScrub(nextGame.states.length);
-  }
-
-  function changeScrub(newScrub: number) {
-    setScrub(newScrub);
-    setScrubbedGame({
-      ...game,
-      states: game.states.slice(0, newScrub)
-    });
   }
 
   return (
     <>
-      <GameScore game={scrubbedGame} />
+      <ScrubbedGame game={game}>
+        {scrubbedGame => <GameScore game={scrubbedGame} />}
+      </ScrubbedGame>
+
       <button disabled={gameIsOver} onClick={simulateAtBat}>
         Simulate at bat
       </button>
@@ -70,13 +60,6 @@ export default function Game() {
         type="number"
         value={ms}
         onChange={e => setMs(parseInt(e.target.value))}
-      />
-      <input
-        type="range"
-        min="0"
-        max={game.states.length}
-        value={scrub}
-        onChange={e => changeScrub(parseInt(e.target.value))}
       />
     </>
   );
