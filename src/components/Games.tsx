@@ -10,18 +10,21 @@ import {
   isGameOver
 } from "../gameEngine";
 
-import GameScore from "./GameScore";
+import GameScore from "./BoxScore";
+import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
 
-const initialGames = [
-  createGame("Orioles", "Blue Jays"),
-  createGame("Red Sox", "Yankees"),
-  createGame("Tigers", "Indians"),
-  createGame("White Sox", "Twins"),
-  createGame("Cubs", "Mets"),
-  createGame("Braves", "Rays")
-];
+const orioles = {
+  name: "Orioles",
+  roster: _.range(9).map(i => `Orioles Player ${i + 1}`)
+};
+const bluejays = {
+  name: "Blue Jays",
+  roster: _.range(9).map(i => `Blue Jays Player ${i + 1}`)
+};
+
+const initialGames = [createGame(orioles, bluejays)];
 
 export default function Game() {
   const [games, setGames] = useState(initialGames);

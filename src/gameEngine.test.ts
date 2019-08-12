@@ -3,19 +3,31 @@ import { out, homeRun } from "./actions";
 import Action from "./actions/Action";
 import _ from "lodash";
 
+const team1 = {
+  name: "Team 1",
+  roster: _.range(9).map(i => `Team 1 Player ${i + 1}`)
+};
+
+const team2 = {
+  name: "Team 2",
+  roster: _.range(9).map(i => `Team 2 Player ${i + 1}`)
+};
+
 const halfInnings = (innings: number) => 3 * innings;
 const fullInnings = (innings: number) => 3 * 2 * innings;
+
+const createTestGame = () => createGame(team1, team2);
 
 function playGameActions(actions: Action[]) {
   return actions.reduce(
     (game, action) => simulateAction(game, () => action),
-    createGame()
+    createTestGame()
   );
 }
 
 describe("innings", () => {
   it("should have no innings at the beginning of the game", () => {
-    const game = createGame();
+    const game = createTestGame();
 
     const { awayInnings, homeInnings } = innings(game);
 
@@ -44,7 +56,7 @@ describe("innings", () => {
 
 describe("isGameOver", () => {
   it("should not consider a game that hasn't started as over", () => {
-    const game = createGame();
+    const game = createTestGame();
 
     expect(isGameOver(game)).toBe(false);
   });
@@ -58,7 +70,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(false);
@@ -73,7 +85,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(true);
@@ -84,7 +96,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(false);
@@ -95,7 +107,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(true);
@@ -109,7 +121,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(false);
@@ -123,7 +135,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(true);
@@ -137,7 +149,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(false);
@@ -151,7 +163,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(true);
@@ -166,7 +178,7 @@ describe("isGameOver", () => {
 
     const game = actions.reduce(
       (game, action) => simulateAction(game, action),
-      createGame()
+      createTestGame()
     );
 
     expect(isGameOver(game)).toBe(true);

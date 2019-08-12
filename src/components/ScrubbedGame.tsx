@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactChildren } from "react";
+import React, { useState, useEffect } from "react";
 import Game from "../models/Game";
 
 type ScrubbedGameProps = {

@@ -1,6 +1,6 @@
-import Game from "./models/Game";
+import Game, { Team } from "./models/Game";
 import Inning from "./models/Inning";
-import { GameState, Team } from "./models/GameState";
+import { GameState } from "./models/GameState";
 import { createState } from "./utils";
 import ActionCreator from "./actions/ActionCreator";
 import _ from "lodash";
@@ -11,7 +11,7 @@ function log(message: any) {
   //console.log(message);
 }
 
-export function createGame(awayTeam: string, homeTeam: string): Game {
+export function createGame(awayTeam: Team, homeTeam: Team): Game {
   return {
     awayTeam,
     homeTeam,
@@ -20,8 +20,8 @@ export function createGame(awayTeam: string, homeTeam: string): Game {
 }
 
 export function innings(game: Game) {
-  const awayStates = game.states.filter(state => state.team === Team.Away);
-  const homeStates = game.states.filter(state => state.team === Team.Home);
+  const awayStates = game.states.filter(state => state.topOfInning);
+  const homeStates = game.states.filter(state => !state.topOfInning);
 
   const awayInnings = _.values(_.groupBy(awayStates, "inning"));
   const homeInnings = _.values(_.groupBy(homeStates, "inning"));
@@ -53,13 +53,13 @@ function massageGame(game: Game): Game {
 
   if (state !== undefined) {
     if (state.outs === 3) {
-      if (state.team === Team.Away) {
+      if (state.topOfInning) {
         return {
           ...game,
           states: [
             ...game.states,
             createState({
-              team: Team.Home,
+              topOfInning: false,
               inning: state.inning
             })
           ]
@@ -70,7 +70,7 @@ function massageGame(game: Game): Game {
           states: [
             ...game.states,
             createState({
-              team: Team.Away,
+              topOfInning: true,
               inning: state.inning + 1
             })
           ]
@@ -80,7 +80,7 @@ function massageGame(game: Game): Game {
   } else {
     return {
       ...game,
-      states: [createState({ team: Team.Away, inning: 1 })]
+      states: [createState({ topOfInning: true, inning: 1 })]
     };
   }
 

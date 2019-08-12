@@ -1,10 +1,10 @@
-import { GameState, Team } from "./models/GameState";
+import { GameState } from "./models/GameState";
 import Bases from "./models/Bases";
 import Inning from "./models/Inning";
 
 export function createState(initialState = {}) {
   const defaultState: GameState = {
-    team: Team.Away,
+    topOfInning: true,
     inning: 1,
     bases: { first: false, second: false, third: false },
     runs: 0,

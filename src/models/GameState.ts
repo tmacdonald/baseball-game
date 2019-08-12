@@ -1,13 +1,8 @@
 import Bases from "./Bases";
 
-export enum Team {
-  Away,
-  Home
-}
-
 export type GameState = {
   inning: number;
-  team: Team;
+  topOfInning: boolean;
   bases: Bases;
   runs: number;
   singles: number;
