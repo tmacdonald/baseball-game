@@ -49,7 +49,6 @@ export default function Game() {
 
   return (
     <>
-      <pre>{JSON.stringify(scrubbedGame.states.length, null, 2)}</pre>
       <GameScore game={scrubbedGame} />
       <button disabled={gameIsOver} onClick={simulateAtBat}>
         Simulate at bat
