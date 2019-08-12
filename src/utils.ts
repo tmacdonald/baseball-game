@@ -16,7 +16,8 @@ export function createState(initialState = {}) {
     errors: 0,
     outs: 0,
     balls: 0,
-    strikes: 0
+    strikes: 0,
+    player: undefined
   };
   return { ...defaultState, ...initialState };
 }

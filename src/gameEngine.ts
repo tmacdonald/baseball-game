@@ -87,6 +87,39 @@ function massageGame(game: Game): Game {
   return game;
 }
 
+function populatePlayer(state: GameState, game: Game): [GameState, Game] {
+  if (state.topOfInning) {
+    const [player, ...roster] = game.awayTeam.roster;
+    return [
+      {
+        ...state,
+        player
+      },
+      {
+        ...game,
+        awayTeam: {
+          ...game.awayTeam,
+          roster: [...roster, player]
+        }
+      }
+    ];
+  }
+  const [player, ...roster] = game.homeTeam.roster;
+  return [
+    {
+      ...state,
+      player
+    },
+    {
+      ...game,
+      homeTeam: {
+        ...game.homeTeam,
+        roster: [...roster, player]
+      }
+    }
+  ];
+}
+
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
   const massagedGame = massageGame(game);
 
@@ -94,9 +127,13 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
   if (state !== undefined) {
     const nextState = _simulateAction(state, createAction);
+    const [nextStateWithPlayer, adjustedRosterGame] = populatePlayer(
+      nextState,
+      massagedGame
+    );
     return {
-      ...massagedGame,
-      states: [...massagedGame.states, nextState]
+      ...adjustedRosterGame,
+      states: [...adjustedRosterGame.states, nextStateWithPlayer]
     };
   }
 

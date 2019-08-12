@@ -1,4 +1,5 @@
 import Bases from "./Bases";
+import { Player } from "./Game";
 
 export type GameState = {
   inning: number;
@@ -14,4 +15,5 @@ export type GameState = {
   outs: number;
   strikes: number;
   balls: number;
+  player: Player | undefined;
 };

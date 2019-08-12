@@ -10,7 +10,7 @@ import {
   isGameOver
 } from "../gameEngine";
 
-import GameScore from "./BoxScore";
+import BoxScore from "./BoxScore";
 
 import createDiceAction from "../DiceActionCreator";
 import ScrubbedGame from "./ScrubbedGame";
@@ -47,7 +47,7 @@ export default function Game() {
   return (
     <>
       <ScrubbedGame game={game}>
-        {scrubbedGame => <GameScore game={scrubbedGame} />}
+        {scrubbedGame => <BoxScore game={scrubbedGame} />}
       </ScrubbedGame>
 
       <button disabled={gameIsOver} onClick={simulateAtBat}>

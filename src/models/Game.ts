@@ -1,6 +1,6 @@
 import { GameState } from "./GameState";
 
-type Player = string;
+export type Player = string;
 
 export interface Team {
   name: string;
