@@ -1,22 +1,24 @@
-import out from "./out";
-import { createState, bases } from "../utils";
+import strikeOut from "./out";
+import { createBases } from "../models/Bases";
 
-it("should increase outs", () => {
-  const state = createState();
+const batter = "A";
+const runner1 = "B";
+const runner2 = "C";
+const runner3 = "D";
 
-  const newState = out(state);
+const startingBases = createBases(runner3, runner2, runner1);
 
-  expect(newState.outs).toEqual(state.outs + 1);
+it("should set out to true", () => {
+  const { out } = strikeOut(batter, startingBases);
+  expect(out).toBe(true);
 });
 
-it("should clear balls and strikes", () => {
-  const state = createState({
-    balls: 3,
-    strikes: 2
-  });
+it("should not moved base runners", () => {
+  const { bases } = strikeOut(batter, startingBases);
+  expect(bases).toEqual(startingBases);
+});
 
-  const newState = out(state);
-
-  expect(newState.balls).toEqual(0);
-  expect(newState.strikes).toEqual(0);
+it("should not score any runners", () => {
+  const { runs } = strikeOut(batter, startingBases);
+  expect(runs).toEqual([]);
 });

@@ -1,6 +1,6 @@
 import { GameState } from "./models/GameState";
-import Bases from "./models/Bases";
 import Inning from "./models/Inning";
+import { Player } from "./models/Game";
 
 export function createState(initialState = {}) {
   const defaultState: GameState = {
@@ -22,9 +22,17 @@ export function createState(initialState = {}) {
   return { ...defaultState, ...initialState };
 }
 
-export function bases(first: boolean, second: boolean, third: boolean): Bases {
-  return { first, second, third };
-}
+// export function bases(first: boolean, second: boolean, third: boolean): Bases {
+//   return { first, second, third };
+// }
+
+// export function bases<T | undefined>(
+//   first: T = undefined,
+//   second: T = undefined,
+//   third: T = undefined
+// ): Bases<T | undefined> {
+//   return { first, second, third };
+// }
 
 export function inningState(inning: Inning): GameState {
   if (inning.length === 0) {

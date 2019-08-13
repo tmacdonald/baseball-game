@@ -1,12 +1,17 @@
-import { GameState } from "../models/GameState";
+import { Player } from "../models/Game";
+import Bases, { createBases } from "../models/Bases";
 
-export default function out(state: GameState): GameState {
-  const { outs } = state;
-
+export default function out(
+  batter: Player,
+  bases: Bases<Player | undefined>
+): {
+  bases: Bases<Player | undefined>;
+  runs: Player[];
+  out: boolean;
+} {
   return {
-    ...state,
-    strikes: 0,
-    balls: 0,
-    outs: outs + 1
+    bases,
+    runs: [],
+    out: true
   };
 }
