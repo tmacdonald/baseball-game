@@ -1,4 +1,4 @@
-import Game, { Team } from "./models/Game";
+import Game, { Team, Player } from "./models/Game";
 import AtBat from "./models/AtBat";
 import { GameState } from "./models/GameState";
 import { createState } from "./utils";
@@ -6,6 +6,7 @@ import ActionCreator from "./actions/ActionCreator";
 import _ from "lodash";
 
 import { runs } from "./stats";
+import Bases, { createBases } from "./models/Bases";
 
 function log(message: any) {
   //console.log(message);
@@ -35,9 +36,6 @@ function sum(x: number, y: number) {
 
 export function isGameOver(game: Game): boolean {
   const { awayAtBats, homeAtBats } = game;
-  //const { awayInnings, homeInnings } = innings(game);
-  // const homeRuns = runs(homeInnings);
-  // const awayRuns = runs(awayInnings);
 
   const awayRuns = awayAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
   const awayOuts = awayAtBats.filter(atBat => atBat.out).length;
@@ -56,7 +54,7 @@ export function isGameOver(game: Game): boolean {
 
   // take a look at the last at bat and get the inning
   // if the away team has less than 3 times the number of innings player, the game can't be over
-  if (awayOuts < awayInnings * 3) {
+  if (awayOuts < 3 * 9) {
     return false;
   }
 
@@ -70,92 +68,117 @@ export function isGameOver(game: Game): boolean {
   );
 }
 
-function massageGame(game: Game): Game {
-  const state = _.last(game.states);
+function getInningInformation(
+  game: Game
+): {
+  inning: number;
+  awayTeamBatting: boolean;
+  bases: Bases<Player | undefined>;
+} {
+  const { awayAtBats, homeAtBats } = game;
+  const lastAwayAtBat = _.last(awayAtBats);
+  const lastHomeAtBat = _.last(homeAtBats);
 
-  if (state !== undefined) {
-    if (state.outs === 3) {
-      if (state.topOfInning) {
-        return {
-          ...game,
-          states: [
-            ...game.states,
-            createState({
-              topOfInning: false,
-              inning: state.inning
-            })
-          ]
-        };
-      } else {
-        return {
-          ...game,
-          states: [
-            ...game.states,
-            createState({
-              topOfInning: true,
-              inning: state.inning + 1
-            })
-          ]
-        };
-      }
-    }
-  } else {
+  if (!lastAwayAtBat) {
+    return { inning: 1, awayTeamBatting: true, bases: createBases() };
+  }
+  const awayInnings = lastAwayAtBat.inning;
+  const awayOuts = awayAtBats.filter(atBat => atBat.out).length;
+
+  if (awayOuts < awayInnings * 3) {
     return {
-      ...game,
-      states: [createState({ topOfInning: true, inning: 1 })]
+      inning: awayInnings,
+      awayTeamBatting: true,
+      bases: lastAwayAtBat.bases
     };
   }
 
-  return game;
-}
-
-function populatePlayer(state: GameState, game: Game): [GameState, Game] {
-  if (state.topOfInning) {
-    const [player, ...roster] = game.awayTeam.roster;
-    return [
-      {
-        ...state,
-        player
-      },
-      {
-        ...game,
-        awayTeam: {
-          ...game.awayTeam,
-          roster: [...roster, player]
-        }
-      }
-    ];
+  if (!lastHomeAtBat) {
+    return { inning: 1, awayTeamBatting: false, bases: createBases() };
   }
-  const [player, ...roster] = game.homeTeam.roster;
-  return [
-    {
-      ...state,
-      player
-    },
-    {
-      ...game,
-      homeTeam: {
-        ...game.homeTeam,
-        roster: [...roster, player]
-      }
+
+  const homeInnings = lastHomeAtBat.inning;
+  const homeOuts = homeAtBats.filter(atBat => atBat.out).length;
+
+  if (homeOuts < homeInnings * 3) {
+    return {
+      inning: homeInnings,
+      awayTeamBatting: false,
+      bases: lastHomeAtBat.bases
+    };
+  } else {
+    if (awayInnings > homeInnings) {
+      return {
+        inning: awayInnings,
+        awayTeamBatting: false,
+        bases: createBases()
+      };
     }
-  ];
+  }
+
+  return {
+    inning: homeInnings + 1,
+    awayTeamBatting: true,
+    bases: createBases()
+  };
 }
 
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
-  const massagedGame = massageGame(game);
+  const { inning, awayTeamBatting, bases: beforeBases } = getInningInformation(
+    game
+  );
 
-  const state = _.last(massagedGame.states);
+  if (awayTeamBatting) {
+    const action = createAction();
 
-  if (state !== undefined) {
-    const nextState = _simulateAction(state, createAction);
-    const [nextStateWithPlayer, adjustedRosterGame] = populatePlayer(
-      nextState,
-      massagedGame
-    );
+    const [batter, ...remainingRoster] = game.awayTeam.roster;
+
+    const { bases, runs, out } = action(batter, beforeBases);
+
+    const atBat: AtBat = {
+      inning,
+      beforeBases,
+      bases,
+      runs,
+      out,
+      batter,
+      action,
+      error: false
+    };
+
     return {
-      ...adjustedRosterGame,
-      states: [...adjustedRosterGame.states, nextStateWithPlayer]
+      ...game,
+      awayTeam: {
+        ...game.awayTeam,
+        roster: [...remainingRoster, batter]
+      },
+      awayAtBats: [...game.awayAtBats, atBat]
+    };
+  } else {
+    const action = createAction();
+
+    const [batter, ...remainingRoster] = game.homeTeam.roster;
+
+    const { bases, runs, out } = action(batter, beforeBases);
+
+    const atBat: AtBat = {
+      inning,
+      beforeBases,
+      bases,
+      runs,
+      out,
+      batter,
+      action,
+      error: false
+    };
+
+    return {
+      ...game,
+      homeTeam: {
+        ...game.homeTeam,
+        roster: [...remainingRoster, batter]
+      },
+      homeAtBats: [...game.homeAtBats, atBat]
     };
   }
 
@@ -163,13 +186,14 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 }
 
 export function simulateInning(game: Game, createAction: ActionCreator): Game {
+  const { inning, awayTeamBatting: top } = getInningInformation(game);
+  let nextInning = inning;
+  let nextTop = top;
   let nextGame = game;
-  let lastState: GameState | undefined;
 
-  do {
+  while (nextInning === inning && nextTop === top) {
     nextGame = simulateAction(nextGame, createAction);
-    lastState = _.last(nextGame.states);
-  } while (lastState !== undefined && lastState.outs !== 3);
+  }
 
   return nextGame;
 }
@@ -182,28 +206,7 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
   return simulatedGame;
 }
 
-// function isInningOver(inning: Inning | undefined): boolean {
-//   if (inning === undefined) {
-//     return false;
-//   }
-//   const mostRecentAction = inning[inning.length - 1];
-//   return mostRecentAction.outs === 3;
-// }
-
 function isInningOver(atBats: AtBat[], inning: number) {
   const inningAtBats = atBats.filter(atBat => atBat.inning === inning);
   return inningAtBats.length === 3;
-}
-
-function _simulateAction(
-  state: GameState,
-  createAction: ActionCreator
-): GameState {
-  const action = createAction();
-  log(action.name);
-
-  const newState = action(state);
-  log(newState);
-
-  return newState;
 }
