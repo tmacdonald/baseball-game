@@ -97,14 +97,14 @@ interface PlayerStatistics {
   walks: number;
 }
 
-function isBatter(player: Player): (atBat: AtBat) => boolean {
+function isPlayer(player: Player): (atBat: AtBat) => boolean {
   return (atBat: AtBat): boolean => {
-    return atBat.batter === player;
+    return atBat.player === player;
   };
 }
 
 export function playerStatistics(game: Game, player: Player): PlayerStatistics {
-  const atBats = game.plays.filter(isBatter(player));
+  const atBats = game.plays.filter(isPlayer(player));
   const singles = atBats.filter(atBat => atBat.action === single).length;
   const doubles = atBats.filter(atBat => atBat.action === double).length;
   const triples = atBats.filter(atBat => atBat.action === triple).length;

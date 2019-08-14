@@ -159,7 +159,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     beforeBases,
     bases,
     runs,
-    batter,
+    player: batter,
     action
   };
 
