@@ -1,5 +1,5 @@
 import Game, { Team, Player } from "./models/Game";
-import AtBat from "./models/AtBat";
+import AtBat from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";
 import out from "./actions/out";
 import _ from "lodash";
@@ -18,19 +18,19 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
   return {
     awayTeam,
     homeTeam,
-    atBats: []
+    plays: []
   };
 }
 
 export function splitAtBats(game: Game): [AtBat[], AtBat[]] {
-  const awayAtBats = game.atBats.filter(atBat => atBat.top);
-  const homeAtBats = game.atBats.filter(atBat => !atBat.top);
+  const awayAtBats = game.plays.filter(atBat => atBat.top);
+  const homeAtBats = game.plays.filter(atBat => !atBat.top);
 
   return [awayAtBats, homeAtBats];
 }
 
 export function innings(game: Game) {
-  const { atBats } = game;
+  const { plays: atBats } = game;
 
   const awayAtBats = atBats.filter(atBat => atBat.top);
   const homeAtBats = atBats.filter(atBat => !atBat.top);
@@ -46,7 +46,7 @@ function sum(x: number, y: number) {
 }
 
 export function isGameOver(game: Game): boolean {
-  const { atBats } = game;
+  const { plays: atBats } = game;
 
   const awayAtBats = atBats.filter(atBat => atBat.top);
   const homeAtBats = atBats.filter(atBat => !atBat.top);
@@ -88,7 +88,7 @@ function getInningInformation(
   awayTeamBatting: boolean;
   bases: Bases<Player | undefined>;
 } {
-  const { atBats } = game;
+  const { plays: atBats } = game;
 
   const awayAtBats = atBats.filter(atBat => atBat.top);
   const homeAtBats = atBats.filter(atBat => !atBat.top);
@@ -171,7 +171,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
       ...game[team],
       roster: [...remainingRoster, batter]
     },
-    atBats: [...game.atBats, atBat]
+    plays: [...game.plays, atBat]
   };
 }
 
