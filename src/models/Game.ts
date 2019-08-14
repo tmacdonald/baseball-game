@@ -11,6 +11,5 @@ export interface Team {
 export default interface Game {
   awayTeam: Team;
   homeTeam: Team;
-  awayAtBats: AtBat[];
-  homeAtBats: AtBat[];
+  atBats: AtBat[];
 }

@@ -1,11 +1,8 @@
 import Game, { Team, Player } from "./models/Game";
 import AtBat from "./models/AtBat";
-import { GameState } from "./models/GameState";
-import { createState } from "./utils";
 import ActionCreator from "./actions/ActionCreator";
 import _ from "lodash";
 
-import { runs } from "./stats";
 import Bases, { createBases } from "./models/Bases";
 
 function log(message: any) {
@@ -16,13 +13,22 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
   return {
     awayTeam,
     homeTeam,
-    awayAtBats: [],
-    homeAtBats: []
+    atBats: []
   };
 }
 
+export function splitAtBats(game: Game): [AtBat[], AtBat[]] {
+  const awayAtBats = game.atBats.filter(atBat => atBat.top);
+  const homeAtBats = game.atBats.filter(atBat => !atBat.top);
+
+  return [awayAtBats, homeAtBats];
+}
+
 export function innings(game: Game) {
-  const { awayAtBats, homeAtBats } = game;
+  const { atBats } = game;
+
+  const awayAtBats = atBats.filter(atBat => atBat.top);
+  const homeAtBats = atBats.filter(atBat => !atBat.top);
 
   const awayInnings = _.values(_.groupBy(awayAtBats, "inning"));
   const homeInnings = _.values(_.groupBy(homeAtBats, "inning"));
@@ -35,7 +41,10 @@ function sum(x: number, y: number) {
 }
 
 export function isGameOver(game: Game): boolean {
-  const { awayAtBats, homeAtBats } = game;
+  const { atBats } = game;
+
+  const awayAtBats = atBats.filter(atBat => atBat.top);
+  const homeAtBats = atBats.filter(atBat => !atBat.top);
 
   const awayRuns = awayAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
   const awayOuts = awayAtBats.filter(atBat => atBat.out).length;
@@ -75,7 +84,11 @@ function getInningInformation(
   awayTeamBatting: boolean;
   bases: Bases<Player | undefined>;
 } {
-  const { awayAtBats, homeAtBats } = game;
+  const { atBats } = game;
+
+  const awayAtBats = atBats.filter(atBat => atBat.top);
+  const homeAtBats = atBats.filter(atBat => !atBat.top);
+
   const lastAwayAtBat = _.last(awayAtBats);
   const lastHomeAtBat = _.last(homeAtBats);
 
@@ -137,6 +150,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
     const atBat: AtBat = {
       inning,
+      top: true,
       beforeBases,
       bases,
       runs,
@@ -152,7 +166,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
         ...game.awayTeam,
         roster: [...remainingRoster, batter]
       },
-      awayAtBats: [...game.awayAtBats, atBat]
+      atBats: [...game.atBats, atBat]
     };
   } else {
     const action = createAction();
@@ -163,6 +177,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
     const atBat: AtBat = {
       inning,
+      top: false,
       beforeBases,
       bases,
       runs,
@@ -178,11 +193,9 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
         ...game.homeTeam,
         roster: [...remainingRoster, batter]
       },
-      homeAtBats: [...game.homeAtBats, atBat]
+      atBats: [...game.atBats, atBat]
     };
   }
-
-  return game;
 }
 
 export function simulateInning(game: Game, createAction: ActionCreator): Game {
@@ -207,6 +220,8 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
 }
 
 function isInningOver(atBats: AtBat[], inning: number) {
-  const inningAtBats = atBats.filter(atBat => atBat.inning === inning);
+  const inningAtBats = atBats
+    .filter(atBat => atBat.inning === inning)
+    .filter(atBat => atBat.out);
   return inningAtBats.length === 3;
 }

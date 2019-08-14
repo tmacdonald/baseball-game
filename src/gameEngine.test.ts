@@ -1,7 +1,13 @@
-import { simulateAction, createGame, isGameOver, innings } from "./gameEngine";
+import {
+  simulateAction,
+  createGame,
+  isGameOver,
+  splitAtBats
+} from "./gameEngine";
 import { out, homeRun } from "./actions";
 import Action from "./actions/Action";
 import _ from "lodash";
+import { runs } from "./stats";
 
 const team1 = {
   name: "Team 1",
@@ -30,18 +36,20 @@ describe("simulateAction", () => {
     const actions = [..._.range(halfInnings(1) + 1).map(() => out)];
 
     const game = playGameActions(actions);
+    const [awayAtBats, homeAtBats] = splitAtBats(game);
 
-    expect(game.awayAtBats.length).toEqual(3);
-    expect(game.homeAtBats.length).toEqual(1);
+    expect(awayAtBats.length).toEqual(3);
+    expect(homeAtBats.length).toEqual(1);
   });
 
   it("should switch to the top half of the next inning after the home team has three outs", () => {
     const actions = [..._.range(fullInnings(1) + 1).map(() => out)];
 
     const game = playGameActions(actions);
+    const [awayAtBats, homeAtBats] = splitAtBats(game);
 
-    expect(game.awayAtBats.length).toEqual(4);
-    expect(game.homeAtBats.length).toEqual(3);
+    expect(awayAtBats.length).toEqual(4);
+    expect(homeAtBats.length).toEqual(3);
   });
 });
 
@@ -72,6 +80,24 @@ describe("isGameOver", () => {
     ]; // 3 outs from the bottom of the first through the top of the ninth
 
     const game = playGameActions(actions);
+
+    expect(isGameOver(game)).toBe(true);
+  });
+
+  it("should consider a game over if 8 1/2 innings are played and the home team is winning, even if the away team scores in the ninth inning", () => {
+    const actions = [
+      ..._.range(halfInnings(1)).map(() => out), // 3 outs for the away team in the top of the 1st
+      homeRun,
+      homeRun, // home for the home team in the bottom of the first
+      ..._.range(halfInnings(1)).map(() => out),
+      ..._.range(fullInnings(7)).map(() => out),
+      homeRun,
+      ..._.range(halfInnings(1)).map(() => out)
+    ]; // 3 outs from the bottom of the first through the top of the ninth
+
+    const game = playGameActions(actions);
+
+    console.log(runs(game));
 
     expect(isGameOver(game)).toBe(true);
   });

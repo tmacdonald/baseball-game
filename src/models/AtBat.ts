@@ -4,6 +4,7 @@ import Action from "../actions/Action";
 
 type AtBat = {
   inning: number;
+  top: boolean;
   beforeBases: Bases<Player | undefined>;
   bases: Bases<Player | undefined>;
   runs: Player[];
