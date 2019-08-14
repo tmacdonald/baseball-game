@@ -24,7 +24,7 @@ const bluejays = {
   roster: _.range(9).map(i => `Blue Jays Player ${i + 1}`)
 };
 
-const initialGames = [createGame(orioles, bluejays)];
+const initialGames = _.range(5).map(() => createGame(orioles, bluejays));
 
 export default function Game() {
   const [games, setGames] = useState(initialGames);

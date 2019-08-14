@@ -7,11 +7,9 @@ export default function out(
 ): {
   bases: Bases<Player | undefined>;
   runs: Player[];
-  out: boolean;
 } {
   return {
     bases,
-    runs: [],
-    out: true
+    runs: []
   };
 }

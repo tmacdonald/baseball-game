@@ -8,11 +8,6 @@ const runner3 = "D";
 
 const startingBases = createBases(runner3, runner2, runner1);
 
-it("should set out to true", () => {
-  const { out } = strikeOut(batter, startingBases);
-  expect(out).toBe(true);
-});
-
 it("should not moved base runners", () => {
   const { bases } = strikeOut(batter, startingBases);
   expect(bases).toEqual(startingBases);

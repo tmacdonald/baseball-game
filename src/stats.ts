@@ -1,7 +1,7 @@
 import AtBat from "./models/AtBat";
 import Game from "./models/Game";
 import { splitAtBats } from "./gameEngine";
-import { single, double, triple, homeRun } from "./actions";
+import { single, double, triple, homeRun, error } from "./actions";
 import _ from "lodash";
 
 function sum(x: number, y: number) {
@@ -15,6 +15,10 @@ function isHit(atBat: AtBat): boolean {
     atBat.action === triple ||
     atBat.action === homeRun
   );
+}
+
+function isError(atBat: AtBat): boolean {
+  return atBat.action === error;
 }
 
 function runsPerAtBat(atBat: AtBat): number {
@@ -65,5 +69,10 @@ export function runsByInning(game: Game): [number[], number[]] {
 }
 
 export function errors(game: Game): [number, number] {
-  return [0, 0];
+  const [awayAtBats, homeAtBats] = splitAtBats(game);
+
+  const awayErrors = awayAtBats.filter(isError).length;
+  const homeErrors = homeAtBats.filter(isError).length;
+
+  return [awayErrors, homeErrors];
 }

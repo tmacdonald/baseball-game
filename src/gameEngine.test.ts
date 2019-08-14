@@ -97,8 +97,6 @@ describe("isGameOver", () => {
 
     const game = playGameActions(actions);
 
-    console.log(runs(game));
-
     expect(isGameOver(game)).toBe(true);
   });
 

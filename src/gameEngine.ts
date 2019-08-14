@@ -1,12 +1,17 @@
 import Game, { Team, Player } from "./models/Game";
 import AtBat from "./models/AtBat";
 import ActionCreator from "./actions/ActionCreator";
+import out from "./actions/out";
 import _ from "lodash";
 
 import Bases, { createBases } from "./models/Bases";
 
 function log(message: any) {
   //console.log(message);
+}
+
+function isOut(atBat: AtBat): boolean {
+  return atBat.action === out;
 }
 
 export function createGame(awayTeam: Team, homeTeam: Team): Game {
@@ -47,9 +52,8 @@ export function isGameOver(game: Game): boolean {
   const homeAtBats = atBats.filter(atBat => !atBat.top);
 
   const awayRuns = awayAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
-  const awayOuts = awayAtBats.filter(atBat => atBat.out).length;
+  const awayOuts = awayAtBats.filter(isOut).length;
   const homeRuns = homeAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
-  const homeOuts = homeAtBats.filter(atBat => atBat.out).length;
 
   const lastAwayAtBat = _.last(awayAtBats);
   const lastHomeAtBat = _.last(homeAtBats);
@@ -96,7 +100,7 @@ function getInningInformation(
     return { inning: 1, awayTeamBatting: true, bases: createBases() };
   }
   const awayInnings = lastAwayAtBat.inning;
-  const awayOuts = awayAtBats.filter(atBat => atBat.out).length;
+  const awayOuts = awayAtBats.filter(isOut).length;
 
   if (awayOuts < awayInnings * 3) {
     return {
@@ -111,7 +115,7 @@ function getInningInformation(
   }
 
   const homeInnings = lastHomeAtBat.inning;
-  const homeOuts = homeAtBats.filter(atBat => atBat.out).length;
+  const homeOuts = homeAtBats.filter(isOut).length;
 
   if (homeOuts < homeInnings * 3) {
     return {
@@ -146,7 +150,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
     const [batter, ...remainingRoster] = game.awayTeam.roster;
 
-    const { bases, runs, out } = action(batter, beforeBases);
+    const { bases, runs } = action(batter, beforeBases);
 
     const atBat: AtBat = {
       inning,
@@ -154,10 +158,8 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
       beforeBases,
       bases,
       runs,
-      out,
       batter,
-      action,
-      error: false
+      action
     };
 
     return {
@@ -173,7 +175,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
     const [batter, ...remainingRoster] = game.homeTeam.roster;
 
-    const { bases, runs, out } = action(batter, beforeBases);
+    const { bases, runs } = action(batter, beforeBases);
 
     const atBat: AtBat = {
       inning,
@@ -181,10 +183,8 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
       beforeBases,
       bases,
       runs,
-      out,
       batter,
-      action,
-      error: false
+      action
     };
 
     return {
@@ -222,6 +222,6 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
 function isInningOver(atBats: AtBat[], inning: number) {
   const inningAtBats = atBats
     .filter(atBat => atBat.inning === inning)
-    .filter(atBat => atBat.out);
+    .filter(isOut);
   return inningAtBats.length === 3;
 }

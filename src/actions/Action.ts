@@ -5,6 +5,5 @@ export default interface Action {
   (batter: Player, bases: Bases<Player | undefined>): {
     bases: Bases<Player | undefined>;
     runs: Player[];
-    out: boolean;
   };
 }

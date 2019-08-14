@@ -10,8 +10,6 @@ type AtBat = {
   runs: Player[];
   batter: Player | undefined;
   action: Action;
-  out: boolean;
-  error: boolean;
 };
 
 export default AtBat;

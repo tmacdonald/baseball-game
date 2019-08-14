@@ -7,11 +7,9 @@ export default function error(
 ): {
   bases: Bases<Player | undefined>;
   runs: Player[];
-  out: boolean;
 } {
   return {
     bases: createBases(batter, bases.first, bases.second),
-    runs: !!bases.third ? [bases.third] : [],
-    out: false
+    runs: !!bases.third ? [bases.third] : []
   };
 }
