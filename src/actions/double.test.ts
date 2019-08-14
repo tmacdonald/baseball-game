@@ -1,49 +1,37 @@
 import double from "./double";
-import { createState, bases } from "../utils";
+import { createBases } from "../models/Bases";
+
+const batter = "A";
+const runner1 = "B";
+const runner2 = "C";
+const runner3 = "D";
 
 it("should put a runner on second base", () => {
-  const state = createState();
+  const { bases, runs } = double(batter, createBases());
 
-  const newState = double(state);
-
-  expect(newState.bases).toEqual(bases(false, true, false));
+  expect(bases).toEqual(createBases(undefined, batter));
+  expect(runs).toEqual([]);
 });
 
-it("should increase doubles", () => {
-  const state = createState();
+it("should advance a runner from first to third", () => {
+  const { bases, runs } = double(batter, createBases(runner1));
 
-  const newState = double(state);
-
-  expect(newState.doubles).toEqual(state.doubles + 1);
-});
-
-it("should move a runner from first to third", () => {
-  const state = createState({
-    bases: bases(true, false, false)
-  });
-
-  const newState = double(state);
-
-  expect(newState.bases).toEqual(bases(false, true, true));
+  expect(bases).toEqual(createBases(undefined, batter, runner1));
+  expect(runs).toEqual([]);
 });
 
 it("should score a runner from second", () => {
-  const state = createState({
-    bases: bases(false, true, false)
-  });
+  const { bases, runs } = double(batter, createBases(undefined, runner1));
 
-  const newState = double(state);
-
-  expect(newState.bases).toEqual(bases(false, true, false));
-  expect(newState.runs).toEqual(state.runs + 1);
+  expect(bases).toEqual(createBases(undefined, batter));
+  expect(runs).toEqual([runner1]);
 });
 it("should score runners from second and third", () => {
-  const state = createState({
-    bases: bases(false, true, true)
-  });
+  const { bases, runs } = double(
+    batter,
+    createBases(runner3, runner2, runner1)
+  );
 
-  const newState = double(state);
-
-  expect(newState.bases).toEqual(bases(false, true, false));
-  expect(newState.runs).toEqual(state.runs + 2);
+  expect(bases).toEqual(createBases(undefined, batter, runner3));
+  expect(runs).toEqual([runner1, runner2]);
 });

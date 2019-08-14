@@ -1,18 +1,15 @@
-import { GameState } from "../models/GameState";
+import { Player } from "../models/Game";
+import Bases, { createBases } from "../models/Bases";
 
-export default function error(state: GameState): GameState {
-  const { bases, errors, runs } = state;
-
+export default function error(
+  batter: Player,
+  bases: Bases<Player | undefined>
+): {
+  bases: Bases<Player | undefined>;
+  runs: Player[];
+} {
   return {
-    ...state,
-    errors: errors + 1,
-    bases: {
-      first: true,
-      second: bases.first,
-      third: bases.second
-    },
-    runs: runs + (bases.third ? 1 : 0),
-    balls: 0,
-    strikes: 0
+    bases: createBases(batter, bases.first, bases.second),
+    runs: !!bases.third ? [bases.third] : []
   };
 }

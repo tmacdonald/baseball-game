@@ -1,5 +1,9 @@
-import { GameState } from "../models/GameState";
+import { Player } from "../models/Game";
+import Bases from "../models/Bases";
 
 export default interface Action {
-  (state: GameState): GameState;
+  (batter: Player, bases: Bases<Player | undefined>): {
+    bases: Bases<Player | undefined>;
+    runs: Player[];
+  };
 }

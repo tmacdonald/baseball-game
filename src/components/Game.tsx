@@ -5,7 +5,6 @@ import _ from "lodash";
 import {
   createGame,
   simulateInning,
-  simulateGame,
   simulateAction,
   isGameOver
 } from "../gameEngine";
@@ -28,7 +27,7 @@ export default function Game() {
   const [game, setGame] = useState(createGame(orioles, bluejays));
 
   const [simulating, setSimulating] = useState(false);
-  const [ms, setMs] = useState(1000);
+  const [ms, setMs] = useState(100);
 
   const gameIsOver = isGameOver(game);
 
@@ -49,7 +48,7 @@ export default function Game() {
       <ScrubbedGame game={game}>
         {scrubbedGame => <BoxScore game={scrubbedGame} />}
       </ScrubbedGame>
-
+      <BoxScore game={game} />
       <button disabled={gameIsOver} onClick={simulateAtBat}>
         Simulate at bat
       </button>

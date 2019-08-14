@@ -1,4 +1,5 @@
-import { GameState } from "./GameState";
+//import { GameState } from "./GameState";
+import AtBat from "./AtBat";
 
 export type Player = string;
 
@@ -10,5 +11,5 @@ export interface Team {
 export default interface Game {
   awayTeam: Team;
   homeTeam: Team;
-  states: GameState[];
+  atBats: AtBat[];
 }

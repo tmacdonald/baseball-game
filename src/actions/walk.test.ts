@@ -1,56 +1,39 @@
+import { createBases } from "../models/Bases";
 import walk from "./walk";
-import { createState, bases } from "../utils";
 
 it("should advance runner from first", () => {
-  const state = createState({
-    bases: bases(true, false, false)
-  });
+  const { bases } = walk("A", createBases("B"));
 
-  const newState = walk(state);
-
-  expect(newState.bases).toEqual(bases(true, true, false));
+  expect(bases).toEqual(createBases("A", "B"));
 });
 
-it("should not advance runners on second and third if no runner is no first", () => {
-  const state = createState({
-    bases: bases(false, true, true)
-  });
+it("should not advance runner on second if no runner is on first", () => {
+  const { bases } = walk("A", createBases(undefined, "B"));
 
-  const newState = walk(state);
-
-  expect(newState.bases).toEqual(bases(true, true, true));
-  expect(newState.runs).toEqual(state.runs);
+  expect(bases).toEqual(createBases("A", "B"));
 });
 
-it("should reset balls and strikes", () => {
-  const state = createState({
-    balls: 3,
-    strikes: 2
-  });
+it("should not advance runner on third if no runner is on first", () => {
+  const { bases } = walk("A", createBases(undefined, undefined, "B"));
 
-  const newState = walk(state);
-
-  expect(newState.balls).toEqual(0);
-  expect(newState.strikes).toEqual(0);
+  expect(bases).toEqual(createBases("A", undefined, "B"));
 });
 
 it("should advance runners on first and second", () => {
-  const state = createState({
-    bases: bases(true, true, false)
-  });
+  const { bases } = walk("A", createBases("B", "C"));
 
-  const newState = walk(state);
+  expect(bases).toEqual(createBases("A", "B", "C"));
+});
 
-  expect(newState.bases).toEqual(bases(true, true, true));
+it("should not advance runners on second and third if no runner is on first", () => {
+  const { bases } = walk("A", createBases(undefined, "B", "C"));
+
+  expect(bases).toEqual(createBases("A", "B", "C"));
 });
 
 it("should score a runner when the bases are loaded", () => {
-  const state = createState({
-    bases: bases(true, true, true)
-  });
+  const { bases, runs } = walk("A", createBases("B", "C", "D"));
 
-  const newState = walk(state);
-
-  expect(newState.bases).toEqual(bases(true, true, true));
-  expect(newState.runs).toEqual(state.runs + 1);
+  expect(bases).toEqual(createBases("A", "B", "C"));
+  expect(runs).toEqual(["D"]);
 });

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Game from "../models/Game";
+import { numberOfAtBats, gameHistory } from "../stats";
 
 type ScrubbedGameProps = {
   game: Game;
@@ -12,15 +13,12 @@ export default function ScrubbedGame({ game, children }: ScrubbedGameProps) {
 
   useEffect(() => {
     setScrubbedGame(game);
-    setScrub(game.states.length);
+    setScrub(numberOfAtBats(game));
   }, [game]);
 
   function changeScrub(newScrub: number) {
     setScrub(newScrub);
-    setScrubbedGame({
-      ...game,
-      states: game.states.slice(0, newScrub)
-    });
+    setScrubbedGame(gameHistory(game, newScrub));
   }
 
   return (
@@ -29,7 +27,7 @@ export default function ScrubbedGame({ game, children }: ScrubbedGameProps) {
       <input
         type="range"
         min="0"
-        max={game.states.length}
+        max={numberOfAtBats(game)}
         value={scrub}
         onChange={e => changeScrub(parseInt(e.target.value))}
       />

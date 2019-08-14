@@ -1,51 +1,38 @@
+import { createBases } from "../models/Bases";
 import homeRun from "./homeRun";
-import { createState, bases } from "../utils";
 
-it("should clear the runners", () => {
-  const state = createState();
+const batter = "A";
+const runner1 = "B";
+const runner2 = "C";
+const runner3 = "D";
 
-  const newState = homeRun(state);
+it("should handle a solo home run", () => {
+  const { bases, runs } = homeRun(batter, createBases());
 
-  expect(newState.bases).toEqual(bases(false, false, false));
-  expect(newState.runs).toEqual(state.runs + 1);
+  expect(bases).toEqual(createBases());
+  expect(runs).toEqual([batter]);
 });
 
-it("should increase homeRuns", () => {
-  const state = createState();
+it("should handle a two run home run", () => {
+  const { bases, runs } = homeRun(batter, createBases(runner1));
 
-  const newState = homeRun(state);
-
-  expect(newState.homeRuns).toEqual(state.homeRuns + 1);
+  expect(bases).toEqual(createBases());
+  expect(runs).toEqual([runner1, batter]);
 });
 
-it("should score a runner from first", () => {
-  const state = createState({
-    bases: bases(true, false, false)
-  });
+it("should handle a three run home run", () => {
+  const { bases, runs } = homeRun(batter, createBases(runner1, runner2));
 
-  const newState = homeRun(state);
-
-  expect(newState.bases).toEqual(bases(false, false, false));
-  expect(newState.runs).toEqual(state.runs + 2);
+  expect(bases).toEqual(createBases());
+  expect(runs).toEqual([runner2, runner1, batter]);
 });
 
-it("should score runner from first and second", () => {
-  const state = createState({
-    bases: bases(true, true, false)
-  });
+it("should handle a grand slam", () => {
+  const { bases, runs } = homeRun(
+    batter,
+    createBases(runner1, runner2, runner3)
+  );
 
-  const newState = homeRun(state);
-
-  expect(newState.bases).toEqual(bases(false, false, false));
-  expect(newState.runs).toEqual(state.runs + 3);
-});
-it("should score runners first, second, and third", () => {
-  const state = createState({
-    bases: bases(true, true, true)
-  });
-
-  const newState = homeRun(state);
-
-  expect(newState.bases).toEqual(bases(false, false, false));
-  expect(newState.runs).toEqual(state.runs + 4);
+  expect(bases).toEqual(createBases());
+  expect(runs).toEqual([runner3, runner2, runner1, batter]);
 });
