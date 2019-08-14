@@ -163,6 +163,8 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     action
   };
 
+  console.log(atBat);
+
   return {
     ...game,
     [team]: {

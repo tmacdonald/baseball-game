@@ -1,7 +1,7 @@
 import AtBat from "./models/AtBat";
-import Game from "./models/Game";
+import Game, { Player } from "./models/Game";
 import { splitAtBats } from "./gameEngine";
-import { single, double, triple, homeRun, error } from "./actions";
+import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
 
 function sum(x: number, y: number) {
@@ -15,6 +15,14 @@ function isHit(atBat: AtBat): boolean {
     atBat.action === triple ||
     atBat.action === homeRun
   );
+}
+
+function isAtBat(atBat: AtBat): boolean {
+  return !isWalk(atBat);
+}
+
+function isWalk(atBat: AtBat): boolean {
+  return atBat.action === walk;
 }
 
 function isError(atBat: AtBat): boolean {
@@ -75,4 +83,53 @@ export function errors(game: Game): [number, number] {
   const homeErrors = homeAtBats.filter(isError).length;
 
   return [awayErrors, homeErrors];
+}
+
+interface PlayerStatistics {
+  atBats: number;
+  singles: number;
+  doubles: number;
+  triples: number;
+  homeRuns: number;
+  hits: number;
+  runs: number;
+  rbis: number;
+  walks: number;
+}
+
+function isBatter(player: Player): (atBat: AtBat) => boolean {
+  return (atBat: AtBat): boolean => {
+    return atBat.batter === player;
+  };
+}
+
+export function playerStatistics(game: Game, player: Player): PlayerStatistics {
+  const atBats = game.atBats.filter(isBatter(player));
+  const singles = atBats.filter(atBat => atBat.action === single).length;
+  const doubles = atBats.filter(atBat => atBat.action === double).length;
+  const triples = atBats.filter(atBat => atBat.action === triple).length;
+  const homeRuns = atBats.filter(atBat => atBat.action === homeRun).length;
+  const hits = atBats.filter(isHit).length;
+  const runs = game.atBats
+    .flatMap(atBat => atBat.runs)
+    .filter(run => run === player).length;
+  const rbis = atBats
+    .filter(a => isHit(a) || isWalk(a))
+    .map(atBat => atBat.runs.length)
+    .reduce(sum, 0);
+  const walks = atBats.filter(isWalk).length;
+
+  const countedAtBats = atBats.filter(isAtBat).length;
+
+  return {
+    atBats: countedAtBats,
+    singles,
+    doubles,
+    triples,
+    homeRuns,
+    hits,
+    runs,
+    rbis,
+    walks
+  };
 }
