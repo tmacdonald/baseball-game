@@ -145,57 +145,32 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     game
   );
 
-  if (awayTeamBatting) {
-    const action = createAction();
+  const team = awayTeamBatting ? "awayTeam" : "homeTeam";
 
-    const [batter, ...remainingRoster] = game.awayTeam.roster;
+  const action = createAction();
 
-    const { bases, runs } = action(batter, beforeBases);
+  const [batter, ...remainingRoster] = game[team].roster;
 
-    const atBat: AtBat = {
-      inning,
-      top: true,
-      beforeBases,
-      bases,
-      runs,
-      batter,
-      action
-    };
+  const { bases, runs } = action(batter, beforeBases);
 
-    return {
-      ...game,
-      awayTeam: {
-        ...game.awayTeam,
-        roster: [...remainingRoster, batter]
-      },
-      atBats: [...game.atBats, atBat]
-    };
-  } else {
-    const action = createAction();
+  const atBat: AtBat = {
+    inning,
+    top: awayTeamBatting,
+    beforeBases,
+    bases,
+    runs,
+    batter,
+    action
+  };
 
-    const [batter, ...remainingRoster] = game.homeTeam.roster;
-
-    const { bases, runs } = action(batter, beforeBases);
-
-    const atBat: AtBat = {
-      inning,
-      top: false,
-      beforeBases,
-      bases,
-      runs,
-      batter,
-      action
-    };
-
-    return {
-      ...game,
-      homeTeam: {
-        ...game.homeTeam,
-        roster: [...remainingRoster, batter]
-      },
-      atBats: [...game.atBats, atBat]
-    };
-  }
+  return {
+    ...game,
+    [team]: {
+      ...game[team],
+      roster: [...remainingRoster, batter]
+    },
+    atBats: [...game.atBats, atBat]
+  };
 }
 
 export function simulateInning(game: Game, createAction: ActionCreator): Game {
