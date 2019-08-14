@@ -11,3 +11,19 @@ export function createBases<T>(
 ): Bases<T | undefined> {
   return { first, second, third };
 }
+
+export function isEmpty<T>(bases: Bases<T>): boolean {
+  return (
+    bases.first === undefined &&
+    bases.second === undefined &&
+    bases.third === undefined
+  );
+}
+
+export function isLoaded<T>(bases: Bases<T>): boolean {
+  return (
+    bases.first !== undefined &&
+    bases.second !== undefined &&
+    bases.third !== undefined
+  );
+}

@@ -1,4 +1,4 @@
-import AtBat from "./models/AtBat";
+import AtBat from "./models/Play";
 import Game, { Player } from "./models/Game";
 import { splitAtBats } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
@@ -34,13 +34,13 @@ function runsPerAtBat(atBat: AtBat): number {
 }
 
 export function numberOfAtBats(game: Game): number {
-  return game.atBats.length;
+  return game.plays.length;
 }
 
 export function gameHistory(game: Game, pointInTime: number): Game {
   return {
     ...game,
-    atBats: game.atBats.slice(0, pointInTime)
+    plays: game.plays.slice(0, pointInTime)
   };
 }
 
@@ -97,20 +97,20 @@ interface PlayerStatistics {
   walks: number;
 }
 
-function isBatter(player: Player): (atBat: AtBat) => boolean {
+function isPlayer(player: Player): (atBat: AtBat) => boolean {
   return (atBat: AtBat): boolean => {
-    return atBat.batter === player;
+    return atBat.player === player;
   };
 }
 
 export function playerStatistics(game: Game, player: Player): PlayerStatistics {
-  const atBats = game.atBats.filter(isBatter(player));
+  const atBats = game.plays.filter(isPlayer(player));
   const singles = atBats.filter(atBat => atBat.action === single).length;
   const doubles = atBats.filter(atBat => atBat.action === double).length;
   const triples = atBats.filter(atBat => atBat.action === triple).length;
   const homeRuns = atBats.filter(atBat => atBat.action === homeRun).length;
   const hits = atBats.filter(isHit).length;
-  const runs = game.atBats
+  const runs = game.plays
     .flatMap(atBat => atBat.runs)
     .filter(run => run === player).length;
   const rbis = atBats

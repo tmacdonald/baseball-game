@@ -8,7 +8,7 @@ type AtBat = {
   beforeBases: Bases<Player | undefined>;
   bases: Bases<Player | undefined>;
   runs: Player[];
-  batter: Player | undefined;
+  player: Player | undefined;
   action: Action;
 };
 
