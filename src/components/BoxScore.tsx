@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import Game from "../models/Game";
 import PlayerStatistics from "./PlayerStatistics";
-import { hits, runs, errors, runsByInning, playerStatistics } from "../stats";
+import { hits, runs, errors, runsByInning } from "../stats";
 
 type BoxScoreProps = {
   game: Game;

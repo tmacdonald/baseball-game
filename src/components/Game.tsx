@@ -13,7 +13,6 @@ import BoxScore from "./BoxScore";
 
 import createDiceAction from "../DiceActionCreator";
 import ScrubbedGame from "./ScrubbedGame";
-import { playerStatistics } from "../stats";
 
 const orioles = {
   name: "Orioles",

@@ -1,15 +1,13 @@
+import out from "./out";
 import { Player } from "../models/Game";
 import Bases from "../models/Bases";
 
-export default function out(
+export default function flyOut(
   batter: Player,
   bases: Bases<Player | undefined>
 ): {
   bases: Bases<Player | undefined>;
   runs: Player[];
 } {
-  return {
-    bases,
-    runs: []
-  };
+  return out(batter, bases);
 }

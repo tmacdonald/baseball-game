@@ -1,7 +1,11 @@
 import Action from "./actions/Action";
+import { Player } from "./models/Game";
+import Bases from "./models/Bases";
 import { walk, single, double, triple, homeRun, out, error } from "./actions";
 
-export default function diceActionCreator(): Action {
+export default function diceActionCreator(
+  bases: Bases<Player | undefined>
+): Action {
   const die1 = Math.ceil(Math.random() * 6);
   const die2 = Math.ceil(Math.random() * 6);
   //console.log(die1, die2);

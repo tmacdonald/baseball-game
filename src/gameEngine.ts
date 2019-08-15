@@ -1,7 +1,14 @@
 import Game, { Team, Player } from "./models/Game";
 import AtBat from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";
-import out from "./actions/out";
+import {
+  out,
+  flyOut,
+  groundOut,
+  popOut,
+  strikeOut,
+  doublePlay
+} from "./actions";
 import _ from "lodash";
 
 import Bases, { createBases } from "./models/Bases";
@@ -10,8 +17,15 @@ function log(message: any) {
   //console.log(message);
 }
 
-function isOut(atBat: AtBat): boolean {
-  return atBat.action === out;
+function numberOfOuts(atBat: AtBat): number {
+  const { action } = atBat;
+  if (action === doublePlay) {
+    return 2;
+  }
+  if ([out, flyOut, groundOut, strikeOut, popOut].includes(action)) {
+    return 1;
+  }
+  return 0;
 }
 
 export function createGame(awayTeam: Team, homeTeam: Team): Game {
@@ -52,7 +66,7 @@ export function isGameOver(game: Game): boolean {
   const homeAtBats = atBats.filter(atBat => !atBat.top);
 
   const awayRuns = awayAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
-  const awayOuts = awayAtBats.filter(isOut).length;
+  const awayOuts = awayAtBats.map(numberOfOuts).reduce(sum, 0);
   const homeRuns = homeAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
 
   const lastAwayAtBat = _.last(awayAtBats);
@@ -100,7 +114,7 @@ function getInningInformation(
     return { inning: 1, awayTeamBatting: true, bases: createBases() };
   }
   const awayInnings = lastAwayAtBat.inning;
-  const awayOuts = awayAtBats.filter(isOut).length;
+  const awayOuts = awayAtBats.map(numberOfOuts).reduce(sum, 0);
 
   if (awayOuts < awayInnings * 3) {
     return {
@@ -115,7 +129,7 @@ function getInningInformation(
   }
 
   const homeInnings = lastHomeAtBat.inning;
-  const homeOuts = homeAtBats.filter(isOut).length;
+  const homeOuts = homeAtBats.map(numberOfOuts).reduce(sum, 0);
 
   if (homeOuts < homeInnings * 3) {
     return {
@@ -147,7 +161,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
   const team = awayTeamBatting ? "awayTeam" : "homeTeam";
 
-  const action = createAction();
+  const action = createAction(beforeBases);
 
   const [batter, ...remainingRoster] = game[team].roster;
 
@@ -162,8 +176,6 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     player: batter,
     action
   };
-
-  //console.log(atBat);
 
   return {
     ...game,
@@ -197,8 +209,9 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
 }
 
 function isInningOver(atBats: AtBat[], inning: number) {
-  const inningAtBats = atBats
+  const outs = atBats
     .filter(atBat => atBat.inning === inning)
-    .filter(isOut);
-  return inningAtBats.length === 3;
+    .map(numberOfOuts)
+    .reduce(sum, 0);
+  return outs === 3;
 }

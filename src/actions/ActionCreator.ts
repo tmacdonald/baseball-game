@@ -1,5 +1,7 @@
 import Action from "./Action";
+import { Player } from "../models/Game";
+import Bases from "../models/Bases";
 
 export default interface ActionCreator {
-  (): Action;
+  (bases: Bases<Player | undefined>): Action;
 }
