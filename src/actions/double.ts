@@ -1,23 +1,32 @@
 import { Player } from "../models/Game";
+import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
+import Count from "../models/Count";
 
-export default function double(
-  batter: Player,
-  bases: Bases<Player | undefined>
-): {
-  bases: Bases<Player | undefined>;
-  runs: Player[];
-} {
-  const runs = [];
-  if (!!bases.third) {
-    runs.push(bases.third);
-  }
-  if (!!bases.second) {
-    runs.push(bases.second);
-  }
+const double: Action = {
+  isHit: () => true,
+  isAtBat: () => true,
+  numberOfOuts: () => 0,
+  isPossible: (bases: Bases<Player | undefined>) => true,
+  causesBatterChange: () => true,
 
-  return {
-    bases: createBases(undefined, batter, bases.first),
-    runs
-  };
-}
+  updateBases: (
+    batter: Player,
+    bases: Bases<Player | undefined>
+  ): Bases<Player | undefined> => {
+    return createBases(undefined, batter, bases.first);
+  },
+
+  updateRuns: (batter: Player, bases: Bases<Player | undefined>): Player[] => {
+    const runs: Player[] = [];
+    if (!!bases.third) {
+      runs.push(bases.third);
+    }
+    if (!!bases.second) {
+      runs.push(bases.second);
+    }
+    return runs;
+  }
+};
+
+export default double;

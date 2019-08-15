@@ -1,3 +1,4 @@
+// TODO It's overkill for this to be generic
 export default interface Bases<T> {
   first: T;
   second: T;
