@@ -15,13 +15,12 @@ const doublePlay: Action = {
     return !!bases.first;
   },
 
-  perform: function(
+  updateRuns: () => [],
+
+  updateBases: function(
     batter: Player,
     bases: Bases<Player | undefined>
-  ): {
-    bases: Bases<Player | undefined>;
-    runs: Player[];
-  } {
+  ): Bases<Player | undefined> {
     let nextBases = bases;
 
     if (isLoaded(bases)) {
@@ -32,7 +31,7 @@ const doublePlay: Action = {
       nextBases = createBases(undefined, undefined, bases.third);
     }
 
-    return { bases: nextBases, runs: [] };
+    return nextBases;
   }
 };
 
