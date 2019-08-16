@@ -1,20 +1,31 @@
 import { Player } from "../models/Game";
 import Bases, { createBases } from "../models/Bases";
+import { ActionOutcome } from "../models/Play";
+import Action from "./Action";
 
-export default function single(
-  batter: Player,
-  bases: Bases<Player | undefined>
-): {
-  bases: Bases<Player | undefined>;
-  runs: Player[];
-} {
-  const runs = [];
-  if (!!bases.third) {
-    runs.push(bases.third);
+const single: Action = {
+  isPossible: (bases: Bases<Player | undefined>): boolean => true,
+
+  perform: (
+    batter: Player,
+    bases: Bases<Player | undefined>
+  ): ActionOutcome => {
+    const runs = [];
+    if (!!bases.third) {
+      runs.push(bases.third);
+    }
+
+    return {
+      batter,
+      bases: createBases(batter, bases.first, bases.second),
+      runs,
+      isAtBat: true,
+      isHit: true,
+      numberOfErrors: 0,
+      numberOfOuts: 0,
+      causesBatterChange: true
+    };
   }
+};
 
-  return {
-    bases: createBases(batter, bases.first, bases.second),
-    runs
-  };
-}
+export default single;
