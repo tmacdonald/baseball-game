@@ -1,29 +1,39 @@
 import { Player } from "../models/Game";
+import Action from "./Action";
 import Bases, { createBases, isLoaded } from "../models/Bases";
+import { ActionOutcome } from "../models/Play";
 
-export default function doublePlay(
-  batter: Player,
-  bases: Bases<Player | undefined>
-): {
-  bases: Bases<Player | undefined>;
-  runs: Player[];
-} {
-  let nextBases = bases;
+const doublePlay: Action = {
+  isPossible: function isDoublePlayPossible(
+    bases: Bases,
+    numberOfOuts: number
+  ): boolean {
+    // is a force available
+    return !!bases.first && numberOfOuts < 2;
+  },
 
-  if (isLoaded(bases)) {
-    nextBases = createBases(undefined, bases.first, bases.second);
-  } else if (!!bases.first && !!bases.second) {
-    nextBases = createBases(undefined, bases.first);
-  } else if (!!bases.first) {
-    nextBases = createBases(undefined, undefined, bases.third);
+  perform: (batter: Player, bases: Bases): ActionOutcome => {
+    let nextBases = bases;
+
+    if (isLoaded(bases)) {
+      nextBases = createBases(undefined, bases.first, bases.second);
+    } else if (!!bases.first && !!bases.second) {
+      nextBases = createBases(undefined, bases.first);
+    } else if (!!bases.first) {
+      nextBases = createBases(undefined, undefined, bases.third);
+    }
+
+    return {
+      batter,
+      bases: nextBases,
+      runs: [],
+      isHit: false,
+      isAtBat: false,
+      numberOfOuts: 2,
+      numberOfErrors: 0,
+      causesBatterChange: true
+    };
   }
+};
 
-  return { bases: nextBases, runs: [] };
-}
-
-export function isDoublePlayPossible(
-  bases: Bases<Player | undefined>
-): boolean {
-  // is a force available
-  return !!bases.first;
-}
+export default doublePlay;

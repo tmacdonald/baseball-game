@@ -8,7 +8,7 @@ import strikeOut from "./strikeOut";
 import groundOut from "./groundOut";
 import flyOut from "./flyOut";
 import popOut from "./popOut";
-import doublePlay, { isDoublePlayPossible } from "./doublePlay";
+import doublePlay from "./doublePlay";
 import error from "./error";
 import steal, { isStealPossible } from "./steal";
 
@@ -24,7 +24,6 @@ export {
   flyOut,
   popOut,
   doublePlay,
-  isDoublePlayPossible,
   error,
   steal,
   isStealPossible

@@ -3,9 +3,9 @@ import Bases, { createBases, isLoaded } from "../models/Bases";
 
 export default function out(
   batter: Player,
-  bases: Bases<Player | undefined>
+  bases: Bases
 ): {
-  bases: Bases<Player | undefined>;
+  bases: Bases;
   runs: Player[];
 } {
   let nextBases = bases;

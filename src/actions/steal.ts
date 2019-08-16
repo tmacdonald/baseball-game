@@ -3,9 +3,9 @@ import Bases, { createBases, isEmpty, isLoaded } from "../models/Bases";
 
 export default function steal(
   batter: Player,
-  bases: Bases<Player | undefined>
+  bases: Bases
 ): {
-  bases: Bases<Player | undefined>;
+  bases: Bases;
   runs: Player[];
 } {
   return {
@@ -18,6 +18,6 @@ export default function steal(
   };
 }
 
-export function isStealPossible(bases: Bases<Player | undefined>): boolean {
+export function isStealPossible(bases: Bases): boolean {
   return !isEmpty(bases) && !isLoaded(bases);
 }

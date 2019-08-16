@@ -1,15 +1,23 @@
 import { Player } from "../models/Game";
+import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
+import { ActionOutcome } from "../models/Play";
 
-export default function error(
-  batter: Player,
-  bases: Bases<Player | undefined>
-): {
-  bases: Bases<Player | undefined>;
-  runs: Player[];
-} {
-  return {
-    bases: createBases(batter, bases.first, bases.second),
-    runs: !!bases.third ? [bases.third] : []
-  };
-}
+const error: Action = {
+  isPossible: (bases: Bases): boolean => true,
+
+  perform: (batter: Player, bases: Bases): ActionOutcome => {
+    return {
+      batter,
+      bases: createBases(batter, bases.first, bases.second),
+      runs: !!bases.third ? [bases.third] : [],
+      isHit: false,
+      isAtBat: true,
+      numberOfErrors: 1,
+      numberOfOuts: 0,
+      causesBatterChange: true
+    };
+  }
+};
+
+export default error;
