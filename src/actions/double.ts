@@ -5,12 +5,9 @@ import Count from "../models/Count";
 import { ActionOutcome } from "../models/Play";
 
 const double: Action = {
-  isPossible: (bases: Bases<Player | undefined>) => true,
+  isPossible: (bases: Bases) => true,
 
-  perform: (
-    batter: Player,
-    bases: Bases<Player | undefined>
-  ): ActionOutcome => {
+  perform: (batter: Player, bases: Bases): ActionOutcome => {
     const runs: Player[] = [];
     if (!!bases.third) {
       runs.push(bases.third);

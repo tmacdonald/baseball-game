@@ -4,12 +4,9 @@ import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 
 const error: Action = {
-  isPossible: (bases: Bases<Player | undefined>): boolean => true,
+  isPossible: (bases: Bases): boolean => true,
 
-  perform: (
-    batter: Player,
-    bases: Bases<Player | undefined>
-  ): ActionOutcome => {
+  perform: (batter: Player, bases: Bases): ActionOutcome => {
     return {
       batter,
       bases: createBases(batter, bases.first, bases.second),

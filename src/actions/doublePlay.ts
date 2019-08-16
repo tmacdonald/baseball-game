@@ -5,17 +5,14 @@ import { ActionOutcome } from "../models/Play";
 
 const doublePlay: Action = {
   isPossible: function isDoublePlayPossible(
-    bases: Bases<Player | undefined>,
+    bases: Bases,
     numberOfOuts: number
   ): boolean {
     // is a force available
     return !!bases.first && numberOfOuts < 2;
   },
 
-  perform: (
-    batter: Player,
-    bases: Bases<Player | undefined>
-  ): ActionOutcome => {
+  perform: (batter: Player, bases: Bases): ActionOutcome => {
     let nextBases = bases;
 
     if (isLoaded(bases)) {

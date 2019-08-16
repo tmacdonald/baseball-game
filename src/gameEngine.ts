@@ -100,7 +100,7 @@ function getInningInformation(
 ): {
   inning: number;
   awayTeamBatting: boolean;
-  bases: Bases<Player | undefined>;
+  bases: Bases;
 } {
   const { plays: plays } = game;
 

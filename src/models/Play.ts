@@ -8,12 +8,12 @@ import Action from "../actions/Action";
 export interface PrePlay {
   inning: number;
   top: boolean;
-  beforeBases: Bases<Player | undefined>;
+  beforeBases: Bases;
   action: Action;
 }
 
 export interface ActionOutcome {
-  bases: Bases<Player | undefined>;
+  bases: Bases;
   runs: Player[];
   batter: Player;
   // Is this considered a hit on the scoresheet (ie. error is not)

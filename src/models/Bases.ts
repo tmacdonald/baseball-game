@@ -1,19 +1,20 @@
-// TODO It's overkill for this to be generic
-export default interface Bases<T> {
-  first: T;
-  second: T;
-  third: T;
+import { Player } from "./Game";
+
+export default interface Bases {
+  first: Player | undefined;
+  second: Player | undefined;
+  third: Player | undefined;
 }
 
-export function createBases<T>(
-  first: T | undefined = undefined,
-  second: T | undefined = undefined,
-  third: T | undefined = undefined
-): Bases<T | undefined> {
+export function createBases(
+  first: Player | undefined = undefined,
+  second: Player | undefined = undefined,
+  third: Player | undefined = undefined
+): Bases {
   return { first, second, third };
 }
 
-export function isEmpty<T>(bases: Bases<T>): boolean {
+export function isEmpty(bases: Bases): boolean {
   return (
     bases.first === undefined &&
     bases.second === undefined &&
@@ -21,7 +22,7 @@ export function isEmpty<T>(bases: Bases<T>): boolean {
   );
 }
 
-export function isLoaded<T>(bases: Bases<T>): boolean {
+export function isLoaded(bases: Bases): boolean {
   return (
     bases.first !== undefined &&
     bases.second !== undefined &&
