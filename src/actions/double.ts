@@ -2,22 +2,15 @@ import { Player } from "../models/Game";
 import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
 import Count from "../models/Count";
+import { ActionOutcome } from "../models/Play";
 
 const double: Action = {
-  isHit: () => true,
-  isAtBat: () => true,
-  numberOfOuts: () => 0,
   isPossible: (bases: Bases<Player | undefined>) => true,
-  causesBatterChange: () => true,
 
-  updateBases: (
+  perform: (
     batter: Player,
     bases: Bases<Player | undefined>
-  ): Bases<Player | undefined> => {
-    return createBases(undefined, batter, bases.first);
-  },
-
-  updateRuns: (batter: Player, bases: Bases<Player | undefined>): Player[] => {
+  ): ActionOutcome => {
     const runs: Player[] = [];
     if (!!bases.third) {
       runs.push(bases.third);
@@ -25,7 +18,16 @@ const double: Action = {
     if (!!bases.second) {
       runs.push(bases.second);
     }
-    return runs;
+    return {
+      batter,
+      bases: createBases(undefined, batter, bases.first),
+      isHit: true,
+      isAtBat: true,
+      numberOfOuts: 0,
+      numberOfErrors: 0,
+      causesBatterChange: true,
+      runs
+    };
   }
 };
 

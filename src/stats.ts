@@ -1,6 +1,6 @@
 import AtBat from "./models/Play";
 import Game, { Player } from "./models/Game";
-import { splitAtBats } from "./gameEngine";
+import { splitPlays } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
 

@@ -1,5 +1,5 @@
 import Game, { Team, Player } from "./models/Game";
-import AtBat from "./models/Play";
+import Play from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";
 import {
   out,
@@ -17,8 +17,8 @@ function log(message: any) {
   //console.log(message);
 }
 
-function numberOfOuts(atBat: AtBat): number {
-  const { action } = atBat;
+function numberOfOuts(play: Play): number {
+  const { action } = play;
   if (action === doublePlay) {
     return 2;
   }
@@ -36,21 +36,21 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
   };
 }
 
-export function splitAtBats(game: Game): [AtBat[], AtBat[]] {
-  const awayAtBats = game.plays.filter(atBat => atBat.top);
-  const homeAtBats = game.plays.filter(atBat => !atBat.top);
+export function splitPlays(game: Game): [Play[], Play[]] {
+  const awayplays = game.plays.filter(play => play.top);
+  const homeplays = game.plays.filter(play => !play.top);
 
-  return [awayAtBats, homeAtBats];
+  return [awayplays, homeplays];
 }
 
 export function innings(game: Game) {
-  const { plays: atBats } = game;
+  const { plays: plays } = game;
 
-  const awayAtBats = atBats.filter(atBat => atBat.top);
-  const homeAtBats = atBats.filter(atBat => !atBat.top);
+  const awayplays = plays.filter(play => play.top);
+  const homeplays = plays.filter(play => !play.top);
 
-  const awayInnings = _.values(_.groupBy(awayAtBats, "inning"));
-  const homeInnings = _.values(_.groupBy(homeAtBats, "inning"));
+  const awayInnings = _.values(_.groupBy(awayplays, "inning"));
+  const homeInnings = _.values(_.groupBy(homeplays, "inning"));
 
   return { awayInnings, homeInnings };
 }
@@ -60,24 +60,24 @@ function sum(x: number, y: number) {
 }
 
 export function isGameOver(game: Game): boolean {
-  const { plays: atBats } = game;
+  const { plays: plays } = game;
 
-  const awayAtBats = atBats.filter(atBat => atBat.top);
-  const homeAtBats = atBats.filter(atBat => !atBat.top);
+  const awayplays = plays.filter(play => play.top);
+  const homeplays = plays.filter(play => !play.top);
 
-  const awayRuns = awayAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
-  const awayOuts = awayAtBats.map(numberOfOuts).reduce(sum, 0);
-  const homeRuns = homeAtBats.map(atBat => atBat.runs.length).reduce(sum, 0);
+  const awayRuns = awayplays.map(play => play.runs.length).reduce(sum, 0);
+  const awayOuts = awayplays.map(numberOfOuts).reduce(sum, 0);
+  const homeRuns = homeplays.map(play => play.runs.length).reduce(sum, 0);
 
-  const lastAwayAtBat = _.last(awayAtBats);
-  const lastHomeAtBat = _.last(homeAtBats);
+  const lastAwayplay = _.last(awayplays);
+  const lastHomeplay = _.last(homeplays);
 
-  if (!lastAwayAtBat || !lastHomeAtBat) {
+  if (!lastAwayplay || !lastHomeplay) {
     return false;
   }
 
-  const awayInnings = lastAwayAtBat.inning;
-  const homeInnings = lastHomeAtBat.inning;
+  const awayInnings = lastAwayplay.inning;
+  const homeInnings = lastHomeplay.inning;
 
   // take a look at the last at bat and get the inning
   // if the away team has less than 3 times the number of innings player, the game can't be over
@@ -87,10 +87,10 @@ export function isGameOver(game: Game): boolean {
 
   return (
     (awayInnings >= 9 &&
-      isInningOver(awayAtBats, awayInnings) &&
+      isInningOver(awayplays, awayInnings) &&
       homeRuns > awayRuns) ||
     (awayInnings === homeInnings &&
-      isInningOver(homeAtBats, homeInnings) &&
+      isInningOver(homeplays, homeInnings) &&
       awayRuns > homeRuns)
   );
 }
@@ -102,40 +102,40 @@ function getInningInformation(
   awayTeamBatting: boolean;
   bases: Bases<Player | undefined>;
 } {
-  const { plays: atBats } = game;
+  const { plays: plays } = game;
 
-  const awayAtBats = atBats.filter(atBat => atBat.top);
-  const homeAtBats = atBats.filter(atBat => !atBat.top);
+  const awayplays = plays.filter(play => play.top);
+  const homeplays = plays.filter(play => !play.top);
 
-  const lastAwayAtBat = _.last(awayAtBats);
-  const lastHomeAtBat = _.last(homeAtBats);
+  const lastAwayplay = _.last(awayplays);
+  const lastHomeplay = _.last(homeplays);
 
-  if (!lastAwayAtBat) {
+  if (!lastAwayplay) {
     return { inning: 1, awayTeamBatting: true, bases: createBases() };
   }
-  const awayInnings = lastAwayAtBat.inning;
-  const awayOuts = awayAtBats.map(numberOfOuts).reduce(sum, 0);
+  const awayInnings = lastAwayplay.inning;
+  const awayOuts = awayplays.map(numberOfOuts).reduce(sum, 0);
 
   if (awayOuts < awayInnings * 3) {
     return {
       inning: awayInnings,
       awayTeamBatting: true,
-      bases: lastAwayAtBat.bases
+      bases: lastAwayplay.bases
     };
   }
 
-  if (!lastHomeAtBat) {
+  if (!lastHomeplay) {
     return { inning: 1, awayTeamBatting: false, bases: createBases() };
   }
 
-  const homeInnings = lastHomeAtBat.inning;
-  const homeOuts = homeAtBats.map(numberOfOuts).reduce(sum, 0);
+  const homeInnings = lastHomeplay.inning;
+  const homeOuts = homeplays.map(numberOfOuts).reduce(sum, 0);
 
   if (homeOuts < homeInnings * 3) {
     return {
       inning: homeInnings,
       awayTeamBatting: false,
-      bases: lastHomeAtBat.bases
+      bases: lastHomeplay.bases
     };
   } else {
     if (awayInnings > homeInnings) {
@@ -165,15 +165,13 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
 
   const [batter, ...remainingRoster] = game[team].roster;
 
-  const { bases, runs } = action(batter, beforeBases);
+  const actionOutcome = action.perform(batter, beforeBases);
 
-  const atBat: AtBat = {
+  const play: Play = {
+    ...actionOutcome,
     inning,
     top: awayTeamBatting,
     beforeBases,
-    bases,
-    runs,
-    player: batter,
     action
   };
 
@@ -183,7 +181,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
       ...game[team],
       roster: [...remainingRoster, batter]
     },
-    plays: [...game.plays, atBat]
+    plays: [...game.plays, play]
   };
 }
 
@@ -208,9 +206,9 @@ export function simulateGame(game: Game, createAction: ActionCreator): Game {
   return simulatedGame;
 }
 
-function isInningOver(atBats: AtBat[], inning: number) {
-  const outs = atBats
-    .filter(atBat => atBat.inning === inning)
+function isInningOver(plays: Play[], inning: number) {
+  const outs = plays
+    .filter(play => play.inning === inning)
     .map(numberOfOuts)
     .reduce(sum, 0);
   return outs === 3;

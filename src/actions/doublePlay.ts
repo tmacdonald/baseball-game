@@ -1,26 +1,21 @@
 import { Player } from "../models/Game";
 import Action from "./Action";
 import Bases, { createBases, isLoaded } from "../models/Bases";
+import { ActionOutcome } from "../models/Play";
 
 const doublePlay: Action = {
-  isHit: () => false,
-  isAtBat: () => true,
-  numberOfOuts: () => 2,
-  causesBatterChange: () => true,
-
   isPossible: function isDoublePlayPossible(
-    bases: Bases<Player | undefined>
+    bases: Bases<Player | undefined>,
+    numberOfOuts: number
   ): boolean {
     // is a force available
-    return !!bases.first;
+    return !!bases.first && numberOfOuts < 2;
   },
 
-  updateRuns: () => [],
-
-  updateBases: function(
+  perform: (
     batter: Player,
     bases: Bases<Player | undefined>
-  ): Bases<Player | undefined> {
+  ): ActionOutcome => {
     let nextBases = bases;
 
     if (isLoaded(bases)) {
@@ -31,7 +26,16 @@ const doublePlay: Action = {
       nextBases = createBases(undefined, undefined, bases.third);
     }
 
-    return nextBases;
+    return {
+      batter,
+      bases: nextBases,
+      runs: [],
+      isHit: false,
+      isAtBat: false,
+      numberOfOuts: 2,
+      numberOfErrors: 0,
+      causesBatterChange: true
+    };
   }
 };
 
