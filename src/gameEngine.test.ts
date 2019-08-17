@@ -2,7 +2,7 @@ import {
   simulateAction,
   createGame,
   isGameOver,
-  splitPlays
+  splitGameByTeam
 } from "./gameEngine";
 import { out, homeRun } from "./actions";
 import Action from "./actions/Action";
@@ -36,7 +36,7 @@ describe("simulateAction", () => {
     const actions = [..._.range(halfInnings(1) + 1).map(() => out)];
 
     const game = playGameActions(actions);
-    const [awayAtBats, homeAtBats] = splitPlays(game);
+    const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
     expect(awayAtBats.length).toEqual(3);
     expect(homeAtBats.length).toEqual(1);
@@ -46,7 +46,7 @@ describe("simulateAction", () => {
     const actions = [..._.range(fullInnings(1) + 1).map(() => out)];
 
     const game = playGameActions(actions);
-    const [awayAtBats, homeAtBats] = splitPlays(game);
+    const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
     expect(awayAtBats.length).toEqual(4);
     expect(homeAtBats.length).toEqual(3);

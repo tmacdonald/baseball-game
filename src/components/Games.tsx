@@ -2,13 +2,7 @@ import React, { useState } from "react";
 
 import useInterval from "../useInterval";
 
-import {
-  createGame,
-  simulateInning,
-  simulateGame,
-  simulateAction,
-  isGameOver
-} from "../gameEngine";
+import { createGame, simulateAction, isGameOver } from "../gameEngine";
 
 import GameScore from "./BoxScore";
 import _ from "lodash";

@@ -33,41 +33,45 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
   };
 }
 
-export function splitPlays(game: Game): [Play[], Play[]] {
-  const awayplays = game.plays.filter(play => play.top);
-  const homeplays = game.plays.filter(play => !play.top);
-
-  return [awayplays, homeplays];
+// TODO This belongs in utils
+export function splitArrayByPredicate<T>(
+  array: T[],
+  predicate: (item: T) => boolean
+): [T[], T[]] {
+  return [array.filter(predicate), array.filter(item => !predicate(item))];
 }
 
-export function innings(game: Game) {
-  const { plays } = game;
+export function splitGameByTeam(game: Game): [Play[], Play[]] {
+  return splitPlaysByTeam(game.plays);
+}
 
-  const awayplays = plays.filter(play => play.top);
-  const homeplays = plays.filter(play => !play.top);
-
-  const awayInnings = _.values(_.groupBy(awayplays, "inning"));
-  const homeInnings = _.values(_.groupBy(homeplays, "inning"));
-
-  return { awayInnings, homeInnings };
+export function splitPlaysByTeam(plays: Play[]): [Play[], Play[]] {
+  return splitArrayByPredicate(plays, play => play.top);
 }
 
 function sum(x: number, y: number) {
   return x + y;
 }
 
+/**
+ * Determine the number of runs that were scored given a list of plays
+ */
+function runs(plays: Play[]) {
+  return plays.map(play => play.runs.length).reduce(sum, 0);
+}
+
 export function isGameOver(game: Game): boolean {
   const { plays } = game;
 
-  const awayplays = plays.filter(play => play.top);
-  const homeplays = plays.filter(play => !play.top);
+  const awayPlays = plays.filter(play => play.top);
+  const homePlays = plays.filter(play => !play.top);
 
-  const awayRuns = awayplays.map(play => play.runs.length).reduce(sum, 0);
-  const awayOuts = awayplays.map(numberOfOuts).reduce(sum, 0);
-  const homeRuns = homeplays.map(play => play.runs.length).reduce(sum, 0);
+  const awayRuns = runs(awayPlays);
+  const awayOuts = awayPlays.map(numberOfOuts).reduce(sum, 0);
+  const homeRuns = runs(homePlays);
 
-  const lastAwayplay = _.last(awayplays);
-  const lastHomeplay = _.last(homeplays);
+  const lastAwayplay = _.last(awayPlays);
+  const lastHomeplay = _.last(homePlays);
 
   if (!lastAwayplay || !lastHomeplay) {
     return false;
@@ -84,10 +88,10 @@ export function isGameOver(game: Game): boolean {
 
   return (
     (awayInnings >= 9 &&
-      isInningOver(awayplays, awayInnings) &&
+      isInningOver(awayPlays, awayInnings) &&
       homeRuns > awayRuns) ||
     (awayInnings === homeInnings &&
-      isInningOver(homeplays, homeInnings) &&
+      isInningOver(homePlays, homeInnings) &&
       awayRuns > homeRuns)
   );
 }

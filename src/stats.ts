@@ -1,6 +1,6 @@
 import AtBat from "./models/Play";
 import Game, { Player } from "./models/Game";
-import { splitPlays } from "./gameEngine";
+import { splitGameByTeam } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
 
@@ -45,7 +45,7 @@ export function gameHistory(game: Game, pointInTime: number): Game {
 }
 
 export function hits(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitPlays(game);
+  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
   const awayHits = awayAtBats.filter(isHit).length;
   const homeHits = homeAtBats.filter(isHit).length;
@@ -54,7 +54,7 @@ export function hits(game: Game): [number, number] {
 }
 
 export function runs(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitPlays(game);
+  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
   const awayRuns = awayAtBats.map(runsPerAtBat).reduce(sum, 0);
   const homeRuns = homeAtBats.map(runsPerAtBat).reduce(sum, 0);
@@ -63,7 +63,7 @@ export function runs(game: Game): [number, number] {
 }
 
 export function runsByInning(game: Game): [number[], number[]] {
-  const [awayAtBats, homeAtBats] = splitPlays(game);
+  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
   const awayAtBatsGroupedByInning = _.values(
     _.groupBy(awayAtBats, "inning")
@@ -77,7 +77,7 @@ export function runsByInning(game: Game): [number[], number[]] {
 }
 
 export function errors(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitPlays(game);
+  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
 
   const awayErrors = awayAtBats.filter(isError).length;
   const homeErrors = homeAtBats.filter(isError).length;
