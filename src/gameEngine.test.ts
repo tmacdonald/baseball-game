@@ -7,7 +7,6 @@ import {
 import { out, homeRun } from "./actions";
 import Action from "./actions/Action";
 import _ from "lodash";
-import { runs } from "./stats";
 
 const team1 = {
   name: "Team 1",

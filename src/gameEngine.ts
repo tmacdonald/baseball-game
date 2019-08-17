@@ -60,31 +60,29 @@ function runs(plays: Play[]) {
   return plays.map(play => play.runs.length).reduce(sum, 0);
 }
 
+/**
+ * Determine the number of outs during a given a list of plays
+ */
+function outs(plays: Play[]) {
+  return plays.map(numberOfOuts).reduce(sum, 0);
+}
+
 export function isGameOver(game: Game): boolean {
   const { plays } = game;
 
-  const awayPlays = plays.filter(play => play.top);
-  const homePlays = plays.filter(play => !play.top);
-
-  const awayRuns = runs(awayPlays);
-  const awayOuts = awayPlays.map(numberOfOuts).reduce(sum, 0);
-  const homeRuns = runs(homePlays);
-
-  const lastAwayplay = _.last(awayPlays);
-  const lastHomeplay = _.last(homePlays);
-
-  if (!lastAwayplay || !lastHomeplay) {
-    return false;
-  }
-
-  const awayInnings = lastAwayplay.inning;
-  const homeInnings = lastHomeplay.inning;
+  const [awayPlays, homePlays] = splitPlaysByTeam(plays);
+  const [awayRuns, homeRuns] = [awayPlays, homePlays].map(runs);
 
   // take a look at the last at bat and get the inning
   // if the away team has less than 3 times the number of innings player, the game can't be over
+  const awayOuts = outs(awayPlays);
   if (awayOuts < 3 * 9) {
     return false;
   }
+
+  const [awayInnings, homeInnings] = [awayPlays, homePlays]
+    .map(_.last)
+    .map(play => (!!play ? play.inning : 0));
 
   return (
     (awayInnings >= 9 &&
