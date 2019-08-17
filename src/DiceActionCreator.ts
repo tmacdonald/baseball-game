@@ -1,5 +1,4 @@
 import Action from "./actions/Action";
-import { Player } from "./models/Game";
 import Bases from "./models/Bases";
 import { walk, single, double, triple, homeRun, out, error } from "./actions";
 

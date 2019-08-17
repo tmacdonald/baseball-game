@@ -1,7 +1,6 @@
 import { Player } from "../models/Game";
 import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
-import Count from "../models/Count";
 import { ActionOutcome } from "../models/Play";
 
 const double: Action = {

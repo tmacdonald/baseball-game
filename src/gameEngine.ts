@@ -13,10 +13,6 @@ import _ from "lodash";
 
 import Bases, { createBases } from "./models/Bases";
 
-function log(message: any) {
-  //console.log(message);
-}
-
 function numberOfOuts(play: Play): number {
   const { action } = play;
   if (action === doublePlay) {
@@ -32,6 +28,7 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
   return {
     awayTeam,
     homeTeam,
+    battingOrder: [awayTeam.roster, homeTeam.roster],
     plays: []
   };
 }
@@ -44,7 +41,7 @@ export function splitPlays(game: Game): [Play[], Play[]] {
 }
 
 export function innings(game: Game) {
-  const { plays: plays } = game;
+  const { plays } = game;
 
   const awayplays = plays.filter(play => play.top);
   const homeplays = plays.filter(play => !play.top);
@@ -60,7 +57,7 @@ function sum(x: number, y: number) {
 }
 
 export function isGameOver(game: Game): boolean {
-  const { plays: plays } = game;
+  const { plays } = game;
 
   const awayplays = plays.filter(play => play.top);
   const homeplays = plays.filter(play => !play.top);
@@ -102,7 +99,7 @@ function getInningInformation(
   awayTeamBatting: boolean;
   bases: Bases;
 } {
-  const { plays: plays } = game;
+  const { plays } = game;
 
   const awayplays = plays.filter(play => play.top);
   const homeplays = plays.filter(play => !play.top);
@@ -159,11 +156,9 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     game
   );
 
-  const team = awayTeamBatting ? "awayTeam" : "homeTeam";
-
   const action = createAction(beforeBases);
 
-  const [batter, ...remainingRoster] = game[team].roster;
+  const [batter, ...otherBatters] = game.battingOrder[awayTeamBatting ? 0 : 1];
 
   const actionOutcome = action.perform(batter, beforeBases);
 
@@ -175,12 +170,16 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     action
   };
 
+  let newBattingOrder: Player[][];
+  if (awayTeamBatting) {
+    newBattingOrder = [[...otherBatters, batter], game.battingOrder[1]];
+  } else {
+    newBattingOrder = [game.battingOrder[0], [...otherBatters, batter]];
+  }
+
   return {
     ...game,
-    [team]: {
-      ...game[team],
-      roster: [...remainingRoster, batter]
-    },
+    battingOrder: newBattingOrder,
     plays: [...game.plays, play]
   };
 }
