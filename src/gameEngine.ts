@@ -103,38 +103,35 @@ function getInningInformation(
 } {
   const { plays } = game;
 
-  const awayplays = plays.filter(play => play.top);
-  const homeplays = plays.filter(play => !play.top);
+  const [awayPlays, homePlays] = splitPlaysByTeam(plays);
+  const [lastAwayPlay, lastHomePlay] = [awayPlays, homePlays].map(_.last);
 
-  const lastAwayplay = _.last(awayplays);
-  const lastHomeplay = _.last(homeplays);
-
-  if (!lastAwayplay) {
+  if (!lastAwayPlay) {
     return { inning: 1, awayTeamBatting: true, bases: createBases() };
   }
-  const awayInnings = lastAwayplay.inning;
-  const awayOuts = awayplays.map(numberOfOuts).reduce(sum, 0);
+  const awayInnings = lastAwayPlay.inning;
+  const awayOuts = outs(awayPlays);
 
   if (awayOuts < awayInnings * 3) {
     return {
       inning: awayInnings,
       awayTeamBatting: true,
-      bases: lastAwayplay.bases
+      bases: lastAwayPlay.bases
     };
   }
 
-  if (!lastHomeplay) {
+  if (!lastHomePlay) {
     return { inning: 1, awayTeamBatting: false, bases: createBases() };
   }
 
-  const homeInnings = lastHomeplay.inning;
-  const homeOuts = homeplays.map(numberOfOuts).reduce(sum, 0);
+  const homeInnings = lastHomePlay.inning;
+  const homeOuts = outs(homePlays);
 
   if (homeOuts < homeInnings * 3) {
     return {
       inning: homeInnings,
       awayTeamBatting: false,
-      bases: lastHomeplay.bases
+      bases: lastHomePlay.bases
     };
   } else {
     if (awayInnings > homeInnings) {
