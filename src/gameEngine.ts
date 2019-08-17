@@ -192,6 +192,9 @@ export function simulateInning(game: Game, createAction: ActionCreator): Game {
 
   while (nextInning === inning && nextTop === top) {
     nextGame = simulateAction(nextGame, createAction);
+    const { inning, awayTeamBatting: top } = getInningInformation(nextGame);
+    nextInning = inning;
+    nextTop = top;
   }
 
   return nextGame;
