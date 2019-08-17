@@ -30,7 +30,6 @@ export default function PlayerStatistics({
       <tbody>
         {roster.map(player => {
           const stats = playerStatistics(game, player);
-          const avg = stats.atBats > 0 ? stats.hits / stats.atBats : "---";
           return (
             <tr>
               <td>{player}</td>
@@ -38,7 +37,7 @@ export default function PlayerStatistics({
               <td>{stats.hits}</td>
               <td>{stats.runs}</td>
               <td>{stats.rbis}</td>
-              <td>{avg}</td>
+              <td>{stats.battingAverage}</td>
               <td>{stats.doubles}</td>
               <td>{stats.triples}</td>
               <td>{stats.homeRuns}</td>

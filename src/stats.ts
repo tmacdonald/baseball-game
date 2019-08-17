@@ -92,6 +92,7 @@ interface PlayerStatistics {
   triples: number;
   homeRuns: number;
   hits: number;
+  battingAverage: number;
   runs: number;
   rbis: number;
   walks: number;
@@ -121,6 +122,9 @@ export function playerStatistics(game: Game, player: Player): PlayerStatistics {
 
   const countedAtBats = atBats.filter(isAtBat).length;
 
+  const battingAverage =
+    countedAtBats > 0 ? _.round(hits / countedAtBats, 3) : 0;
+
   return {
     atBats: countedAtBats,
     singles,
@@ -130,6 +134,7 @@ export function playerStatistics(game: Game, player: Player): PlayerStatistics {
     hits,
     runs,
     rbis,
-    walks
+    walks,
+    battingAverage
   };
 }
