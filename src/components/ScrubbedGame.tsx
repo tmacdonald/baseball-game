@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Game from "../models/Game";
-import { numberOfPlays, gameHistory } from "../stats";
+import { numberOfPlays, sliceGame } from "../stats";
 
 type ScrubbedGameProps = {
   game: Game;
@@ -18,7 +18,7 @@ export default function ScrubbedGame({ game, children }: ScrubbedGameProps) {
 
   function changeScrub(newScrub: number) {
     setScrub(newScrub);
-    setScrubbedGame(gameHistory(game, newScrub));
+    setScrubbedGame(sliceGame(game, newScrub));
   }
 
   return (

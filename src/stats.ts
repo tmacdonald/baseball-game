@@ -8,18 +8,8 @@ function sum(x: number, y: number) {
   return x + y;
 }
 
-function isHit(play: Play): boolean {
-  return (
-    play.action === single ||
-    play.action === double ||
-    play.action === triple ||
-    play.action === homeRun
-  );
-}
-
-function isplay(play: Play): boolean {
-  return !isWalk(play);
-}
+const isHit = (play: Play): boolean => play.isHit;
+const isAtBat = (play: Play): boolean => play.isAtBat;
 
 function isWalk(play: Play): boolean {
   return play.action === walk;
@@ -29,7 +19,7 @@ function isError(play: Play): boolean {
   return play.action === error;
 }
 
-function runsPerplay(play: Play): number {
+function runsPerPlay(play: Play): number {
   return play.runs.length;
 }
 
@@ -37,10 +27,10 @@ export function numberOfPlays(game: Game): number {
   return game.plays.length;
 }
 
-export function gameHistory(game: Game, pointInTime: number): Game {
+export function sliceGame(game: Game, numberOfPlays: number): Game {
   return {
     ...game,
-    plays: game.plays.slice(0, pointInTime)
+    plays: game.plays.slice(0, numberOfPlays)
   };
 }
 
@@ -56,8 +46,8 @@ export function hits(game: Game): [number, number] {
 export function runs(game: Game): [number, number] {
   const [awayplays, homeplays] = splitGameByTeam(game);
 
-  const awayRuns = awayplays.map(runsPerplay).reduce(sum, 0);
-  const homeRuns = homeplays.map(runsPerplay).reduce(sum, 0);
+  const awayRuns = awayplays.map(runsPerPlay).reduce(sum, 0);
+  const homeRuns = homeplays.map(runsPerPlay).reduce(sum, 0);
 
   return [awayRuns, homeRuns];
 }
@@ -66,11 +56,11 @@ export function runsByInning(game: Game): [number[], number[]] {
   const [awayplays, homeplays] = splitGameByTeam(game);
 
   const awayplaysGroupedByInning = _.values(_.groupBy(awayplays, "inning")).map(
-    inningplays => inningplays.map(runsPerplay).reduce(sum, 0)
+    inningplays => inningplays.map(runsPerPlay).reduce(sum, 0)
   );
 
   const homeplaysGroupedByInning = _.values(_.groupBy(homeplays, "inning")).map(
-    inningplays => inningplays.map(runsPerplay).reduce(sum, 0)
+    inningplays => inningplays.map(runsPerPlay).reduce(sum, 0)
   );
 
   return [awayplaysGroupedByInning, homeplaysGroupedByInning];
@@ -119,7 +109,7 @@ function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
     .reduce(sum, 0);
   const walks = playerPlays.filter(isWalk).length;
 
-  const atBats = playerPlays.filter(isplay).length;
+  const atBats = playerPlays.filter(isAtBat).length;
 
   const battingAverage = atBats > 0 ? _.round(hits / atBats, 3) : 0;
 
