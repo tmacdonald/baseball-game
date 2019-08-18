@@ -40,7 +40,7 @@ const teams: Team[] = teamNames.map(teamName => ({
   roster: _.range(9).map(i => `${teamName} Player ${i + 1}`)
 }));
 
-const initialGames = [
+const initialGames = _.range(2).flatMap(() => [
   ..._.range(3).flatMap(() =>
     _.range(teams.length / 2).map(i =>
       createGame(teams[i * 2], teams[i * 2 + 1])
@@ -56,7 +56,7 @@ const initialGames = [
       createGame(teams[i], teams[teams.length - i - 1])
     )
   )
-];
+]);
 
 export default function Games() {
   const [games, setGames] = useState<Game[]>(initialGames);
