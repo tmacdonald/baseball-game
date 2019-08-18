@@ -1,5 +1,10 @@
-import out from "./out";
+import { isPossible, perform } from "./out";
+import Action from "./Action";
 
-const flyOut = out;
+const flyOut: Action = {
+  name: "flyOut",
+  isPossible,
+  perform
+};
 
 export default flyOut;

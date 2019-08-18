@@ -4,6 +4,8 @@ import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 
 const double: Action = {
+  name: "double",
+
   isPossible: (bases: Bases) => true,
 
   perform: (batter: Player, bases: Bases): ActionOutcome => {

@@ -1,27 +1,12 @@
 import Game, { Team, Player } from "./models/Game";
 import Play from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";
-import {
-  out,
-  flyOut,
-  groundOut,
-  popOut,
-  strikeOut,
-  doublePlay
-} from "./actions";
 import _ from "lodash";
 
 import Bases, { createBases } from "./models/Bases";
 
 function numberOfOuts(play: Play): number {
-  const { action } = play;
-  if (action === doublePlay) {
-    return 2;
-  }
-  if ([out, flyOut, groundOut, strikeOut, popOut].includes(action)) {
-    return 1;
-  }
-  return 0;
+  return play.numberOfOuts;
 }
 
 export function createGame(awayTeam: Team, homeTeam: Team): Game {
@@ -171,9 +156,9 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
   const play: Play = {
     ...actionOutcome,
     inning,
-    top: top,
+    top,
     beforeBases,
-    action
+    action: action.name
   };
 
   //console.log(play);

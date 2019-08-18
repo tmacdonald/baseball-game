@@ -4,6 +4,8 @@ import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 
 const error: Action = {
+  name: "error",
+
   isPossible: (bases: Bases): boolean => true,
 
   perform: (batter: Player, bases: Bases): ActionOutcome => {

@@ -10,14 +10,8 @@ function sum(x: number, y: number) {
 
 const isHit = (play: Play): boolean => play.isHit;
 const isAtBat = (play: Play): boolean => play.isAtBat;
-
-function isWalk(play: Play): boolean {
-  return play.action === walk;
-}
-
-function isError(play: Play): boolean {
-  return play.action === error;
-}
+const isWalk = (play: Play): boolean => play.action === walk.name;
+const isError = (play: Play): boolean => play.action === error.name;
 
 function runsPerPlay(play: Play): number {
   return play.runs.length;
@@ -96,10 +90,14 @@ function isBatter(player: Player): (play: Play) => boolean {
 
 function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
   const playerPlays = plays.filter(isBatter(player));
-  const singles = playerPlays.filter(play => play.action === single).length;
-  const doubles = playerPlays.filter(play => play.action === double).length;
-  const triples = playerPlays.filter(play => play.action === triple).length;
-  const homeRuns = playerPlays.filter(play => play.action === homeRun).length;
+  const singles = playerPlays.filter(play => play.action === single.name)
+    .length;
+  const doubles = playerPlays.filter(play => play.action === double.name)
+    .length;
+  const triples = playerPlays.filter(play => play.action === triple.name)
+    .length;
+  const homeRuns = playerPlays.filter(play => play.action === homeRun.name)
+    .length;
   const hits = playerPlays.filter(isHit).length;
   const runs = plays.flatMap(play => play.runs).filter(run => run === player)
     .length;

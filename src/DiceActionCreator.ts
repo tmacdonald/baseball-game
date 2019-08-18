@@ -6,7 +6,6 @@ import {
   double,
   triple,
   homeRun,
-  out,
   error,
   popOut,
   groundOut,
@@ -61,6 +60,5 @@ export default function diceActionCreator(
       return rule.action;
     }
   }
-  //console.log(diceRoll);
-  return out;
+  return groundOut;
 }

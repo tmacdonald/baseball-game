@@ -4,7 +4,7 @@ import {
   isGameOver,
   splitGameByTeam
 } from "./gameEngine";
-import { out, homeRun } from "./actions";
+import { strikeOut as out, homeRun } from "./actions";
 import Action from "./actions/Action";
 import _ from "lodash";
 

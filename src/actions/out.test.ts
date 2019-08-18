@@ -1,12 +1,10 @@
-import out from "./out";
+import { perform } from "./out";
 import { createBases } from "../models/Bases";
 
 const batter = "A";
 const runner1 = "B";
 const runner2 = "C";
 const runner3 = "D";
-
-const { perform } = out;
 
 const startingBases = createBases(runner3, runner2, runner1);
 

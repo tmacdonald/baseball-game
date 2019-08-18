@@ -9,10 +9,10 @@ export interface PrePlay {
   inning: number;
   top: boolean;
   beforeBases: Bases;
-  action: Action;
+  action: string;
 }
 
-export interface ActionOutcome {
+export interface PostPlay {
   bases: Bases;
   runs: Player[];
   batter: Player;
@@ -24,8 +24,11 @@ export interface ActionOutcome {
   numberOfOuts: number;
   // The number of errors that happened during this play
   numberOfErrors: number;
-  // Does this play cause the batter to pulled from the on deck circle
+}
+
+export interface ActionOutcome extends PostPlay {
+  // Does this play cause the batter to be pulled from the on deck circle
   causesBatterChange: boolean;
 }
 
-export default interface Play extends PrePlay, ActionOutcome {}
+export default interface Play extends PrePlay, PostPlay {}

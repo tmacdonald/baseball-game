@@ -4,6 +4,8 @@ import Bases, { createBases, isLoaded } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 
 const doublePlay: Action = {
+  name: "doublePlay",
+
   isPossible: function isDoublePlayPossible(
     bases: Bases,
     numberOfOuts: number

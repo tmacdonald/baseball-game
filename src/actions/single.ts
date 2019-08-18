@@ -4,6 +4,7 @@ import { ActionOutcome } from "../models/Play";
 import Action from "./Action";
 
 const single: Action = {
+  name: "single",
   isPossible: (bases: Bases): boolean => true,
 
   perform: (batter: Player, bases: Bases): ActionOutcome => {

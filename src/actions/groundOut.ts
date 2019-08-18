@@ -4,6 +4,8 @@ import Action from "./Action";
 import { ActionOutcome } from "../models/Play";
 
 const groundOut: Action = {
+  name: "groundOut",
+
   isPossible: (bases: Bases): boolean => true,
 
   perform: (batter: Player, bases: Bases): ActionOutcome => {
