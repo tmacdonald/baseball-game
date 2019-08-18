@@ -10,7 +10,8 @@ import {
   isGameOver
 } from "../gameEngine";
 
-import GameScore from "./BoxScore";
+import BoxScore from "./BoxScore";
+import GameSummary from "./GameSummary";
 import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
@@ -97,7 +98,7 @@ export default function Games() {
   return (
     <>
       {games.map(game => (
-        <GameScore game={game} />
+        <GameSummary game={game} />
       ))}
       <Standings teams={teams} games={games} />
       {/* {teams.map(team => (
