@@ -100,6 +100,7 @@ function getInningInformation(
   inning: number;
   top: boolean;
   bases: Bases;
+  numberOfOuts: number;
 } {
   const { plays } = game;
 
@@ -108,7 +109,7 @@ function getInningInformation(
 
   // if there is no last play, the game is about to start
   if (lastPlay === undefined) {
-    return { inning: 1, top: true, bases: createBases() };
+    return { inning: 1, top: true, bases: createBases(), numberOfOuts: 0 };
   }
 
   const { inning, top } = lastPlay;
@@ -117,17 +118,23 @@ function getInningInformation(
   );
 
   // if the current inning is over, start the next inning
-  if (outs(inningPlays) === 3) {
+  const numberOfOuts = outs(inningPlays);
+  if (numberOfOuts === 3) {
     if (top) {
       // if we were in the top half of an inning, switch to the bottom half
-      return { inning, top: !top, bases: createBases() };
+      return { inning, top: !top, bases: createBases(), numberOfOuts: 0 };
     }
     // otherwise, switch to the top half of the next inning
-    return { inning: inning + 1, top: !top, bases: createBases() };
+    return {
+      inning: inning + 1,
+      top: !top,
+      bases: createBases(),
+      numberOfOuts: 0
+    };
   }
 
   // default case: ust the current half inning and the last play's bases as the input to the next play
-  return { inning, top, bases: lastPlay.bases };
+  return { inning, top, bases: lastPlay.bases, numberOfOuts };
 }
 
 function getNextBatter(battingOrder: Player[][], top: boolean): Player {
@@ -148,9 +155,14 @@ function updateBattingOrder(
 
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
   const { battingOrder, plays } = game;
-  const { inning, top, bases: beforeBases } = getInningInformation(game);
+  const {
+    inning,
+    top,
+    bases: beforeBases,
+    numberOfOuts
+  } = getInningInformation(game);
 
-  const action = createAction(beforeBases);
+  const action = createAction(beforeBases, numberOfOuts);
 
   const batter = getNextBatter(battingOrder, top);
 
@@ -163,6 +175,8 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     beforeBases,
     action
   };
+
+  console.log(play);
 
   return {
     ...game,

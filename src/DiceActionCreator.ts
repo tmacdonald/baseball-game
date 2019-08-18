@@ -1,60 +1,68 @@
 import Action from "./actions/Action";
 import Bases from "./models/Bases";
-import { walk, single, double, triple, homeRun, out, error } from "./actions";
+import {
+  walk,
+  single,
+  double,
+  triple,
+  homeRun,
+  out,
+  error,
+  popOut,
+  groundOut,
+  strikeOut,
+  flyOut,
+  doublePlay
+} from "./actions";
+import _ from "lodash";
 
-export default function diceActionCreator(bases: Bases): Action {
-  const die1 = Math.ceil(Math.random() * 6);
-  const die2 = Math.ceil(Math.random() * 6);
-  //console.log(die1, die2);
+type Rule = {
+  diceRoll: [number, number];
+  action: Action;
+};
 
-  // 1/1 home run
-  if (die1 === 1 && die2 === 1) {
-    return homeRun;
-  }
-  // 1/2 double
-  if ((die1 === 1 && die2 === 2) || (die1 === 2 && die2 === 1)) {
-    return double;
-  }
-  // 1/3 single
-  if ((die1 === 1 && die2 === 3) || (die1 === 3 && die2 === 1)) {
-    return single;
-  }
-  // 1/4 pop out
-  // 1/5 ground out
-  // 1/6 strike out
-  // 2/2 single
-  if (die1 === 2 && die2 === 2) {
-    return single;
-  }
-  // 2/3 pop out
-  // 2/4 ground out
-  // 2/5 strike out
-  // 2/6 ground out
-  // 3/3 single
-  if (die1 === 3 && die2 === 3) {
-    return single;
-  }
-  // 3/4 strike out
-  // 3/5 ground out
-  // 3/6 fly out
-  // 4/4 walk
-  if (die1 === 4 && die2 === 4) {
-    return walk;
-  }
-  // 4/5 fly out
-  // 4/6 fly out
-  // 5/5 base on error
-  if (die1 === 5 && die2 === 5) {
-    return error;
-  }
-  // 5/6 single
-  if ((die1 === 5 && die2 === 6) || (die1 === 6 && die2 === 5)) {
-    return single;
-  }
-  // 6/6 triple
-  if (die1 === 6 && die2 === 6) {
-    return triple;
-  }
+const rules: Rule[] = [
+  { diceRoll: [1, 1], action: homeRun },
+  { diceRoll: [1, 2], action: double },
+  { diceRoll: [1, 3], action: single },
+  { diceRoll: [1, 4], action: popOut },
+  { diceRoll: [1, 5], action: doublePlay },
+  { diceRoll: [1, 6], action: strikeOut },
+  { diceRoll: [2, 2], action: single },
+  { diceRoll: [2, 3], action: popOut },
+  { diceRoll: [2, 4], action: groundOut },
+  { diceRoll: [2, 5], action: strikeOut },
+  { diceRoll: [2, 6], action: groundOut },
+  { diceRoll: [3, 3], action: single },
+  { diceRoll: [3, 4], action: strikeOut },
+  { diceRoll: [3, 5], action: groundOut },
+  { diceRoll: [3, 6], action: flyOut },
+  { diceRoll: [4, 4], action: walk },
+  { diceRoll: [4, 5], action: flyOut },
+  { diceRoll: [4, 6], action: flyOut },
+  { diceRoll: [5, 5], action: error },
+  { diceRoll: [5, 6], action: single },
+  { diceRoll: [6, 6], action: triple }
+];
 
+export default function diceActionCreator(
+  bases: Bases,
+  numberOfOuts: number
+): Action {
+  const diceRoll = _.range(2).map(() => Math.ceil(Math.random() * 6));
+  diceRoll.sort((a, b) => (a < b ? -1 : 1));
+
+  const rule = _.find(
+    rules,
+    roll => diceRoll[0] === roll.diceRoll[0] && diceRoll[1] === roll.diceRoll[1]
+  );
+  if (rule !== undefined) {
+    if (rule.action.isPossible(bases, numberOfOuts)) {
+      console.log(diceRoll, rule.action);
+      return rule.action;
+    }
+    console.log("double play not possible, reverting to a single out");
+  }
+  //console.log(diceRoll);
   return out;
 }
