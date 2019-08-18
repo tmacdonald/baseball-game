@@ -26,8 +26,8 @@ function numberOfOuts(play: Play): number {
 
 export function createGame(awayTeam: Team, homeTeam: Team): Game {
   return {
-    awayTeam,
-    homeTeam,
+    teams: [awayTeam, homeTeam],
+    rosters: [awayTeam.roster, homeTeam.roster],
     battingOrder: [awayTeam.roster, homeTeam.roster],
     plays: []
   };
@@ -176,7 +176,7 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     action
   };
 
-  console.log(play);
+  //console.log(play);
 
   return {
     ...game,

@@ -8,6 +8,7 @@ type BoxScoreProps = {
 };
 
 export default function BoxScore({ game }: BoxScoreProps) {
+  const [awayTeam, homeTeam] = game.teams;
   const [awayHits, homeHits] = hits(game);
   const [awayRuns, homeRuns] = runs(game);
   const [awayErrors, homeErrors] = errors(game);
@@ -44,14 +45,14 @@ export default function BoxScore({ game }: BoxScoreProps) {
         </thead>
         <tbody>
           <tr>
-            <td>{game.awayTeam.name}</td>
+            <td>{awayTeam.name}</td>
             {printInnings(awayRunsPerInning, numberOfInnings)}
             <td>{awayRuns}</td>
             <td>{awayHits}</td>
             <td>{awayErrors}</td>
           </tr>
           <tr>
-            <td>{game.homeTeam.name}</td>
+            <td>{homeTeam.name}</td>
             {printInnings(homeRunsPerInning, numberOfInnings)}
             <td>{homeRuns}</td>
             <td>{homeHits}</td>

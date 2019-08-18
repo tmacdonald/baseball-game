@@ -58,10 +58,8 @@ export default function diceActionCreator(
   );
   if (rule !== undefined) {
     if (rule.action.isPossible(bases, numberOfOuts)) {
-      console.log(diceRoll, rule.action);
       return rule.action;
     }
-    console.log("double play not possible, reverting to a single out");
   }
   //console.log(diceRoll);
   return out;

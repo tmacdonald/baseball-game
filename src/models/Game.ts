@@ -8,9 +8,8 @@ export interface Team {
 }
 
 export default interface Game {
-  awayTeam: Team;
-  homeTeam: Team;
+  teams: [Team, Team];
+  rosters: [Player[], Player[]];
   battingOrder: Player[][];
-
   plays: Play[];
 }

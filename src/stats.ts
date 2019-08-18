@@ -151,27 +151,30 @@ interface TeamStandings {
 
 function teamStats(team: Team, games: Game[]): TeamStandings {
   const isTeam = (game: Game) =>
-    game.awayTeam.name === team.name || game.homeTeam.name === team.name;
+    game.teams.filter(gameTeam => team.name === gameTeam.name).length > 0;
   const teamGames = games.filter(isTeam);
   const completedGames = teamGames.filter(isGameOver);
   const wins = completedGames.filter(game => {
+    const [awayTeam, homeTeam] = game.teams;
     const [awayRuns, homeRuns] = runs(game);
     return (
-      (game.awayTeam.name === team.name && awayRuns > homeRuns) ||
-      (game.homeTeam.name === team.name && homeRuns > awayRuns)
+      (awayTeam.name === team.name && awayRuns > homeRuns) ||
+      (homeTeam.name === team.name && homeRuns > awayRuns)
     );
   }).length;
   const losses = completedGames.length - wins;
 
   const runsScored = teamGames.reduce((accumulatedRuns, game) => {
+    const [awayTeam] = game.teams;
     const [awayRuns, homeRuns] = runs(game);
-    const runsScored = game.awayTeam.name === team.name ? awayRuns : homeRuns;
+    const runsScored = awayTeam.name === team.name ? awayRuns : homeRuns;
     return accumulatedRuns + runsScored;
   }, 0);
 
   const runsAgainst = teamGames.reduce((accumulatedRuns, game) => {
+    const [awayTeam] = game.teams;
     const [awayRuns, homeRuns] = runs(game);
-    const runsScored = game.awayTeam.name === team.name ? homeRuns : awayRuns;
+    const runsScored = awayTeam.name === team.name ? homeRuns : awayRuns;
     return accumulatedRuns + runsScored;
   }, 0);
 

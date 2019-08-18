@@ -112,8 +112,8 @@ export default function Games() {
       </button> */}
       <button
         //onClick={() => setGame(simulateGame(game, createDiceAction))}
-        // onClick={simulateGames}
-        onClick={() => setSimulating(true)}
+        onClick={simulateGames}
+        //onClick={() => setSimulating(true)}
       >
         Simulate Games
       </button>
