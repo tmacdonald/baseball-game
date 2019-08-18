@@ -1,14 +1,14 @@
 import React from "react";
 import Game, { Player } from "../models/Game";
-import { playerStatistics } from "../stats";
+import { playerStatisticsByGames } from "../stats";
 
 type PlayerStatisticsProps = {
-  game: Game;
+  games: Game[];
   roster: Player[];
 };
 
 export default function PlayerStatistics({
-  game,
+  games,
   roster
 }: PlayerStatisticsProps) {
   return (
@@ -29,7 +29,7 @@ export default function PlayerStatistics({
       </thead>
       <tbody>
         {roster.map(player => {
-          const stats = playerStatistics(game, player);
+          const stats = playerStatisticsByGames(games, player);
           return (
             <tr>
               <td>{player}</td>

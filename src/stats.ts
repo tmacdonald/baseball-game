@@ -1,6 +1,6 @@
-import AtBat from "./models/Play";
-import Game, { Player } from "./models/Game";
-import { splitGameByTeam } from "./gameEngine";
+import Play from "./models/Play";
+import Game, { Team, Player } from "./models/Game";
+import { splitGameByTeam, isGameOver } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
 
@@ -8,32 +8,32 @@ function sum(x: number, y: number) {
   return x + y;
 }
 
-function isHit(atBat: AtBat): boolean {
+function isHit(play: Play): boolean {
   return (
-    atBat.action === single ||
-    atBat.action === double ||
-    atBat.action === triple ||
-    atBat.action === homeRun
+    play.action === single ||
+    play.action === double ||
+    play.action === triple ||
+    play.action === homeRun
   );
 }
 
-function isAtBat(atBat: AtBat): boolean {
-  return !isWalk(atBat);
+function isplay(play: Play): boolean {
+  return !isWalk(play);
 }
 
-function isWalk(atBat: AtBat): boolean {
-  return atBat.action === walk;
+function isWalk(play: Play): boolean {
+  return play.action === walk;
 }
 
-function isError(atBat: AtBat): boolean {
-  return atBat.action === error;
+function isError(play: Play): boolean {
+  return play.action === error;
 }
 
-function runsPerAtBat(atBat: AtBat): number {
-  return atBat.runs.length;
+function runsPerplay(play: Play): number {
+  return play.runs.length;
 }
 
-export function numberOfAtBats(game: Game): number {
+export function numberOfPlays(game: Game): number {
   return game.plays.length;
 }
 
@@ -45,42 +45,42 @@ export function gameHistory(game: Game, pointInTime: number): Game {
 }
 
 export function hits(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
+  const [awayplays, homeplays] = splitGameByTeam(game);
 
-  const awayHits = awayAtBats.filter(isHit).length;
-  const homeHits = homeAtBats.filter(isHit).length;
+  const awayHits = awayplays.filter(isHit).length;
+  const homeHits = homeplays.filter(isHit).length;
 
   return [awayHits, homeHits];
 }
 
 export function runs(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
+  const [awayplays, homeplays] = splitGameByTeam(game);
 
-  const awayRuns = awayAtBats.map(runsPerAtBat).reduce(sum, 0);
-  const homeRuns = homeAtBats.map(runsPerAtBat).reduce(sum, 0);
+  const awayRuns = awayplays.map(runsPerplay).reduce(sum, 0);
+  const homeRuns = homeplays.map(runsPerplay).reduce(sum, 0);
 
   return [awayRuns, homeRuns];
 }
 
 export function runsByInning(game: Game): [number[], number[]] {
-  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
+  const [awayplays, homeplays] = splitGameByTeam(game);
 
-  const awayAtBatsGroupedByInning = _.values(
-    _.groupBy(awayAtBats, "inning")
-  ).map(inningAtBats => inningAtBats.map(runsPerAtBat).reduce(sum, 0));
+  const awayplaysGroupedByInning = _.values(_.groupBy(awayplays, "inning")).map(
+    inningplays => inningplays.map(runsPerplay).reduce(sum, 0)
+  );
 
-  const homeAtBatsGroupedByInning = _.values(
-    _.groupBy(homeAtBats, "inning")
-  ).map(inningAtBats => inningAtBats.map(runsPerAtBat).reduce(sum, 0));
+  const homeplaysGroupedByInning = _.values(_.groupBy(homeplays, "inning")).map(
+    inningplays => inningplays.map(runsPerplay).reduce(sum, 0)
+  );
 
-  return [awayAtBatsGroupedByInning, homeAtBatsGroupedByInning];
+  return [awayplaysGroupedByInning, homeplaysGroupedByInning];
 }
 
 export function errors(game: Game): [number, number] {
-  const [awayAtBats, homeAtBats] = splitGameByTeam(game);
+  const [awayplays, homeplays] = splitGameByTeam(game);
 
-  const awayErrors = awayAtBats.filter(isError).length;
-  const homeErrors = homeAtBats.filter(isError).length;
+  const awayErrors = awayplays.filter(isError).length;
+  const homeErrors = homeplays.filter(isError).length;
 
   return [awayErrors, homeErrors];
 }
@@ -98,35 +98,33 @@ interface PlayerStatistics {
   walks: number;
 }
 
-function isBatter(player: Player): (atBat: AtBat) => boolean {
-  return (atBat: AtBat): boolean => {
-    return atBat.batter === player;
+function isBatter(player: Player): (play: Play) => boolean {
+  return (play: Play): boolean => {
+    return play.batter === player;
   };
 }
 
-export function playerStatistics(game: Game, player: Player): PlayerStatistics {
-  const atBats = game.plays.filter(isBatter(player));
-  const singles = atBats.filter(atBat => atBat.action === single).length;
-  const doubles = atBats.filter(atBat => atBat.action === double).length;
-  const triples = atBats.filter(atBat => atBat.action === triple).length;
-  const homeRuns = atBats.filter(atBat => atBat.action === homeRun).length;
-  const hits = atBats.filter(isHit).length;
-  const runs = game.plays
-    .flatMap(atBat => atBat.runs)
-    .filter(run => run === player).length;
-  const rbis = atBats
+function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
+  const playerPlays = plays.filter(isBatter(player));
+  const singles = playerPlays.filter(play => play.action === single).length;
+  const doubles = playerPlays.filter(play => play.action === double).length;
+  const triples = playerPlays.filter(play => play.action === triple).length;
+  const homeRuns = playerPlays.filter(play => play.action === homeRun).length;
+  const hits = playerPlays.filter(isHit).length;
+  const runs = plays.flatMap(play => play.runs).filter(run => run === player)
+    .length;
+  const rbis = playerPlays
     .filter(a => isHit(a) || isWalk(a))
-    .map(atBat => atBat.runs.length)
+    .map(play => play.runs.length)
     .reduce(sum, 0);
-  const walks = atBats.filter(isWalk).length;
+  const walks = playerPlays.filter(isWalk).length;
 
-  const countedAtBats = atBats.filter(isAtBat).length;
+  const atBats = playerPlays.filter(isplay).length;
 
-  const battingAverage =
-    countedAtBats > 0 ? _.round(hits / countedAtBats, 3) : 0;
+  const battingAverage = atBats > 0 ? _.round(hits / atBats, 3) : 0;
 
   return {
-    atBats: countedAtBats,
+    atBats,
     singles,
     doubles,
     triples,
@@ -137,4 +135,65 @@ export function playerStatistics(game: Game, player: Player): PlayerStatistics {
     walks,
     battingAverage
   };
+}
+
+export function playerStatisticsByGame(
+  game: Game,
+  player: Player
+): PlayerStatistics {
+  return playerStatsByPlays(game.plays, player);
+}
+
+export function playerStatisticsByGames(
+  games: Game[],
+  player: Player
+): PlayerStatistics {
+  return playerStatsByPlays(games.flatMap(game => game.plays), player);
+}
+
+interface TeamStandings {
+  team: Team;
+  wins: number;
+  losses: number;
+  runsScored: number;
+  runsAgainst: number;
+}
+
+function teamStats(team: Team, games: Game[]): TeamStandings {
+  const isTeam = (game: Game) =>
+    game.awayTeam.name === team.name || game.homeTeam.name === team.name;
+  const teamGames = games.filter(isTeam);
+  const completedGames = teamGames.filter(isGameOver);
+  const wins = completedGames.filter(game => {
+    const [awayRuns, homeRuns] = runs(game);
+    return (
+      (game.awayTeam.name === team.name && awayRuns > homeRuns) ||
+      (game.homeTeam.name === team.name && homeRuns > awayRuns)
+    );
+  }).length;
+  const losses = completedGames.length - wins;
+
+  const runsScored = teamGames.reduce((accumulatedRuns, game) => {
+    const [awayRuns, homeRuns] = runs(game);
+    const runsScored = game.awayTeam.name === team.name ? awayRuns : homeRuns;
+    return accumulatedRuns + runsScored;
+  }, 0);
+
+  const runsAgainst = teamGames.reduce((accumulatedRuns, game) => {
+    const [awayRuns, homeRuns] = runs(game);
+    const runsScored = game.awayTeam.name === team.name ? homeRuns : awayRuns;
+    return accumulatedRuns + runsScored;
+  }, 0);
+
+  return {
+    team,
+    wins,
+    losses,
+    runsScored,
+    runsAgainst
+  };
+}
+
+export function standings(teams: Team[], games: Game[]): TeamStandings[] {
+  return teams.map(team => teamStats(team, games));
 }

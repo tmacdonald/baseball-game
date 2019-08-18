@@ -98,100 +98,88 @@ function getInningInformation(
   game: Game
 ): {
   inning: number;
-  awayTeamBatting: boolean;
+  top: boolean;
   bases: Bases;
 } {
   const { plays } = game;
 
-  const [awayPlays, homePlays] = splitPlaysByTeam(plays);
-  const [lastAwayPlay, lastHomePlay] = [awayPlays, homePlays].map(_.last);
+  // get the last play
+  const lastPlay = _.last(plays);
 
-  if (!lastAwayPlay) {
-    return { inning: 1, awayTeamBatting: true, bases: createBases() };
-  }
-  const awayInnings = lastAwayPlay.inning;
-  const awayOuts = outs(awayPlays);
-
-  if (awayOuts < awayInnings * 3) {
-    return {
-      inning: awayInnings,
-      awayTeamBatting: true,
-      bases: lastAwayPlay.bases
-    };
+  // if there is no last play, the game is about to start
+  if (lastPlay === undefined) {
+    return { inning: 1, top: true, bases: createBases() };
   }
 
-  if (!lastHomePlay) {
-    return { inning: 1, awayTeamBatting: false, bases: createBases() };
-  }
+  const { inning, top } = lastPlay;
+  const inningPlays = plays.filter(
+    play => play.inning === inning && play.top === top
+  );
 
-  const homeInnings = lastHomePlay.inning;
-  const homeOuts = outs(homePlays);
-
-  if (homeOuts < homeInnings * 3) {
-    return {
-      inning: homeInnings,
-      awayTeamBatting: false,
-      bases: lastHomePlay.bases
-    };
-  } else {
-    if (awayInnings > homeInnings) {
-      return {
-        inning: awayInnings,
-        awayTeamBatting: false,
-        bases: createBases()
-      };
+  // if the current inning is over, start the next inning
+  if (outs(inningPlays) === 3) {
+    if (top) {
+      // if we were in the top half of an inning, switch to the bottom half
+      return { inning, top: !top, bases: createBases() };
     }
+    // otherwise, switch to the top half of the next inning
+    return { inning: inning + 1, top: !top, bases: createBases() };
   }
 
-  return {
-    inning: homeInnings + 1,
-    awayTeamBatting: true,
-    bases: createBases()
-  };
+  // default case: ust the current half inning and the last play's bases as the input to the next play
+  return { inning, top, bases: lastPlay.bases };
+}
+
+function getNextBatter(battingOrder: Player[][], top: boolean): Player {
+  const [batter] = battingOrder[top ? 0 : 1];
+  return batter;
+}
+
+function updateBattingOrder(
+  battingOrder: Player[][],
+  top: boolean
+): Player[][] {
+  const [batter, ...otherBatters] = battingOrder[top ? 0 : 1];
+  if (top) {
+    return [[...otherBatters, batter], battingOrder[1]];
+  }
+  return [battingOrder[0], [...otherBatters, batter]];
 }
 
 export function simulateAction(game: Game, createAction: ActionCreator): Game {
-  const { inning, awayTeamBatting, bases: beforeBases } = getInningInformation(
-    game
-  );
+  const { battingOrder, plays } = game;
+  const { inning, top, bases: beforeBases } = getInningInformation(game);
 
   const action = createAction(beforeBases);
 
-  const [batter, ...otherBatters] = game.battingOrder[awayTeamBatting ? 0 : 1];
+  const batter = getNextBatter(battingOrder, top);
 
   const actionOutcome = action.perform(batter, beforeBases);
 
   const play: Play = {
     ...actionOutcome,
     inning,
-    top: awayTeamBatting,
+    top: top,
     beforeBases,
     action
   };
 
-  let newBattingOrder: Player[][];
-  if (awayTeamBatting) {
-    newBattingOrder = [[...otherBatters, batter], game.battingOrder[1]];
-  } else {
-    newBattingOrder = [game.battingOrder[0], [...otherBatters, batter]];
-  }
-
   return {
     ...game,
-    battingOrder: newBattingOrder,
-    plays: [...game.plays, play]
+    battingOrder: updateBattingOrder(battingOrder, top),
+    plays: [...plays, play]
   };
 }
 
 export function simulateInning(game: Game, createAction: ActionCreator): Game {
-  const { inning, awayTeamBatting: top } = getInningInformation(game);
+  const { inning, top } = getInningInformation(game);
   let nextInning = inning;
   let nextTop = top;
   let nextGame = game;
 
   while (nextInning === inning && nextTop === top) {
     nextGame = simulateAction(nextGame, createAction);
-    const { inning, awayTeamBatting: top } = getInningInformation(nextGame);
+    const { inning, top } = getInningInformation(nextGame);
     nextInning = inning;
     nextTop = top;
   }

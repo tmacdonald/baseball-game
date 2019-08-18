@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
 import Game from "../models/Game";
-import PlayerStatistics from "./PlayerStatistics";
 import { hits, runs, errors, runsByInning } from "../stats";
 
 type BoxScoreProps = {
@@ -60,8 +59,6 @@ export default function BoxScore({ game }: BoxScoreProps) {
           </tr>
         </tbody>
       </table>
-      <PlayerStatistics game={game} roster={game.awayTeam.roster} />
-      <PlayerStatistics game={game} roster={game.homeTeam.roster} />
     </>
   );
 }
