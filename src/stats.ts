@@ -66,7 +66,7 @@ export function errors(game: Game): [number, number] {
   const awayErrors = awayplays.filter(isError).length;
   const homeErrors = homeplays.filter(isError).length;
 
-  return [awayErrors, homeErrors];
+  return [homeErrors, awayErrors];
 }
 
 interface PlayerStatistics {

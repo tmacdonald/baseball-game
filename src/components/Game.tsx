@@ -13,6 +13,7 @@ import BoxScore from "./BoxScore";
 
 import createDiceAction from "../DiceActionCreator";
 import ScrubbedGame from "./ScrubbedGame";
+import GamePlayLog from "./GamePlayLog";
 
 const orioles = {
   name: "Orioles",
@@ -46,9 +47,14 @@ export default function Game() {
   return (
     <>
       <ScrubbedGame game={game}>
-        {scrubbedGame => <BoxScore game={scrubbedGame} />}
+        {(scrubbedGame, control) => (
+          <>
+            <BoxScore game={scrubbedGame} />
+            {control}
+            <GamePlayLog game={scrubbedGame} />
+          </>
+        )}
       </ScrubbedGame>
-      {/* <BoxScore game={game} /> */}
 
       <button disabled={gameIsOver} onClick={simulateAtBat}>
         Simulate at bat
