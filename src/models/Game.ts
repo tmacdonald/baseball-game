@@ -1,15 +1,14 @@
 import Play from "./Play";
-
-export type Player = string;
+import { PlayerID } from "./Player";
 
 export interface Team {
   name: string;
-  roster: Player[];
+  roster: PlayerID[];
 }
 
 export default interface Game {
   teams: [Team, Team];
-  rosters: [Player[], Player[]];
-  battingOrder: Player[][];
+  rosters: [PlayerID[], PlayerID[]];
+  battingOrder: PlayerID[][];
   plays: Play[];
 }

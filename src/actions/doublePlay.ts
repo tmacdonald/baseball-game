@@ -1,4 +1,4 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Action from "./Action";
 import Bases, { createBases, isLoaded } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
@@ -14,7 +14,7 @@ const doublePlay: Action = {
     return !!bases.first && numberOfOuts < 2;
   },
 
-  perform: (batter: Player, bases: Bases): ActionOutcome => {
+  perform: (batter: PlayerID, bases: Bases): ActionOutcome => {
     let nextBases = bases;
 
     if (isLoaded(bases)) {

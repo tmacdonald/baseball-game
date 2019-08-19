@@ -1,5 +1,6 @@
 import Play from "./models/Play";
-import Game, { Team, Player } from "./models/Game";
+import Game, { Team } from "./models/Game";
+import { PlayerID } from "./models/Player";
 import { splitGameByTeam, isGameOver } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
@@ -70,6 +71,7 @@ export function errors(game: Game): [number, number] {
 }
 
 interface PlayerStatistics {
+  player: PlayerID;
   atBats: number;
   singles: number;
   doubles: number;
@@ -82,13 +84,13 @@ interface PlayerStatistics {
   walks: number;
 }
 
-function isBatter(player: Player): (play: Play) => boolean {
+function isBatter(player: PlayerID): (play: Play) => boolean {
   return (play: Play): boolean => {
     return play.batter === player;
   };
 }
 
-function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
+function playerStatsByPlays(plays: Play[], player: PlayerID): PlayerStatistics {
   const playerPlays = plays.filter(isBatter(player));
   const singles = playerPlays.filter(play => play.action === single.name)
     .length;
@@ -112,6 +114,7 @@ function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
   const battingAverage = atBats > 0 ? _.round(hits / atBats, 3) : 0;
 
   return {
+    player,
     atBats,
     singles,
     doubles,
@@ -127,14 +130,14 @@ function playerStatsByPlays(plays: Play[], player: Player): PlayerStatistics {
 
 export function playerStatisticsByGame(
   game: Game,
-  player: Player
+  player: PlayerID
 ): PlayerStatistics {
   return playerStatsByPlays(game.plays, player);
 }
 
 export function playerStatisticsByGames(
   games: Game[],
-  player: Player
+  player: PlayerID
 ): PlayerStatistics {
   return playerStatsByPlays(games.flatMap(game => game.plays), player);
 }

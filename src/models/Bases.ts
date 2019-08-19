@@ -1,15 +1,15 @@
-import { Player } from "./Game";
+import { PlayerID } from "./Player";
 
 export default interface Bases {
-  first: Player | undefined;
-  second: Player | undefined;
-  third: Player | undefined;
+  first: PlayerID | undefined;
+  second: PlayerID | undefined;
+  third: PlayerID | undefined;
 }
 
 export function createBases(
-  first: Player | undefined = undefined,
-  second: Player | undefined = undefined,
-  third: Player | undefined = undefined
+  first: PlayerID | undefined = undefined,
+  second: PlayerID | undefined = undefined,
+  third: PlayerID | undefined = undefined
 ): Bases {
   return { first, second, third };
 }

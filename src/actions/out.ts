@@ -1,10 +1,10 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Bases from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 
 const isPossible = (bases: Bases): boolean => true;
 
-const perform = (batter: Player, bases: Bases): ActionOutcome => ({
+const perform = (batter: PlayerID, bases: Bases): ActionOutcome => ({
   batter,
   bases,
   runs: [],

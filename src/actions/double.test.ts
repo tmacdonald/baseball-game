@@ -1,5 +1,4 @@
 import double from "./double";
-import { Player } from "../models/Game";
 import Bases, { createBases } from "../models/Bases";
 
 const batter = "A";

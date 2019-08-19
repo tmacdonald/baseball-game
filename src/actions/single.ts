@@ -1,4 +1,4 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
 import Action from "./Action";
@@ -7,7 +7,7 @@ const single: Action = {
   name: "single",
   isPossible: (bases: Bases): boolean => true,
 
-  perform: (batter: Player, bases: Bases): ActionOutcome => {
+  perform: (batter: PlayerID, bases: Bases): ActionOutcome => {
     const runs = [];
     if (!!bases.third) {
       runs.push(bases.third);

@@ -1,5 +1,5 @@
-import Bases, { createBases } from "./Bases";
-import { Player } from "./Game";
+import Bases from "./Bases";
+import { PlayerID } from "./Player";
 import Action from "../actions/Action";
 
 /**
@@ -14,8 +14,8 @@ export interface PrePlay {
 
 export interface PostPlay {
   bases: Bases;
-  runs: Player[];
-  batter: Player;
+  runs: PlayerID[];
+  batter: PlayerID;
   // Is this considered a hit on the scoresheet (ie. error is not)
   isHit: boolean;
   // Is this considered an at bat on the scoresheet (ie. walk is not)

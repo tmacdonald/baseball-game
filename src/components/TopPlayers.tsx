@@ -2,16 +2,23 @@ import React from "react";
 import Game from "../models/Game";
 import { PlayerID } from "../models/Player";
 import { playerStatisticsByGames } from "../stats";
+import _ from "lodash";
 
-type PlayerStatisticsProps = {
+type TopPlayersStatisticsProps = {
   games: Game[];
-  roster: PlayerID[];
+  players: PlayerID[];
+  numberOfPlayersToShow: number;
 };
 
-export default function PlayerStatistics({
+export default function TopPlayersStatistics({
   games,
-  roster
-}: PlayerStatisticsProps) {
+  players,
+  numberOfPlayersToShow
+}: TopPlayersStatisticsProps) {
+  const stats = players.map(player => playerStatisticsByGames(games, player));
+  stats.sort((a, b) => (a.battingAverage > b.battingAverage ? -1 : 1));
+  const topPlayers = _.take(stats, numberOfPlayersToShow);
+
   return (
     <table>
       <thead>
@@ -29,11 +36,10 @@ export default function PlayerStatistics({
         </tr>
       </thead>
       <tbody>
-        {roster.map(player => {
-          const stats = playerStatisticsByGames(games, player);
+        {topPlayers.map(stats => {
           return (
             <tr>
-              <td>{player}</td>
+              <td>{stats.player}</td>
               <td>{stats.atBats}</td>
               <td>{stats.hits}</td>
               <td>{stats.runs}</td>

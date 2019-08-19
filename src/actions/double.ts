@@ -1,4 +1,4 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
@@ -8,8 +8,8 @@ const double: Action = {
 
   isPossible: (bases: Bases) => true,
 
-  perform: (batter: Player, bases: Bases): ActionOutcome => {
-    const runs: Player[] = [];
+  perform: (batter: PlayerID, bases: Bases): ActionOutcome => {
+    const runs: PlayerID[] = [];
     if (!!bases.third) {
       runs.push(bases.third);
     }

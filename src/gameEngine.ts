@@ -1,4 +1,5 @@
-import Game, { Team, Player } from "./models/Game";
+import Game, { Team } from "./models/Game";
+import { PlayerID } from "./models/Player";
 import Play from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";
 import _ from "lodash";
@@ -122,15 +123,15 @@ function getInningInformation(
   return { inning, top, bases: lastPlay.bases, numberOfOuts };
 }
 
-function getNextBatter(battingOrder: Player[][], top: boolean): Player {
+function getNextBatter(battingOrder: PlayerID[][], top: boolean): PlayerID {
   const [batter] = battingOrder[top ? 0 : 1];
   return batter;
 }
 
 function updateBattingOrder(
-  battingOrder: Player[][],
+  battingOrder: PlayerID[][],
   top: boolean
-): Player[][] {
+): PlayerID[][] {
   const [batter, ...otherBatters] = battingOrder[top ? 0 : 1];
   if (top) {
     return [[...otherBatters, batter], battingOrder[1]];

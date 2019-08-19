@@ -18,7 +18,8 @@ export default function Standings({ teams, games }: StandingsProps) {
           <th>Team</th>
           <th>Wins</th>
           <th>Losses</th>
-          <th>R</th>
+          <th>RF</th>
+          <th>RA</th>
         </tr>
       </thead>
       <tbody>

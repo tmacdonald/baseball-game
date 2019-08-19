@@ -1,12 +1,12 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Bases, { createBases, isEmpty, isLoaded } from "../models/Bases";
 
 export default function steal(
-  batter: Player,
+  batter: PlayerID,
   bases: Bases
 ): {
   bases: Bases;
-  runs: Player[];
+  runs: PlayerID[];
 } {
   return {
     bases: createBases(

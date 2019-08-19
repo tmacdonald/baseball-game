@@ -1,4 +1,4 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Bases, { createBases, isLoaded } from "../models/Bases";
 import Action from "./Action";
 import { ActionOutcome } from "../models/Play";
@@ -8,7 +8,7 @@ const groundOut: Action = {
 
   isPossible: (bases: Bases): boolean => true,
 
-  perform: (batter: Player, bases: Bases): ActionOutcome => {
+  perform: (batter: PlayerID, bases: Bases): ActionOutcome => {
     let nextBases = bases;
 
     if (isLoaded(bases)) {

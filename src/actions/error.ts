@@ -1,4 +1,4 @@
-import { Player } from "../models/Game";
+import { PlayerID } from "../models/Player";
 import Action from "./Action";
 import Bases, { createBases } from "../models/Bases";
 import { ActionOutcome } from "../models/Play";
@@ -8,7 +8,7 @@ const error: Action = {
 
   isPossible: (bases: Bases): boolean => true,
 
-  perform: (batter: Player, bases: Bases): ActionOutcome => {
+  perform: (batter: PlayerID, bases: Bases): ActionOutcome => {
     return {
       batter,
       bases: createBases(batter, bases.first, bases.second),
