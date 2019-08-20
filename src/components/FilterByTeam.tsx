@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Team } from "../models/Game";
+import Team from "../models/Team";
 
 type FilterByTeamGamesProps = {
   teams: Team[];

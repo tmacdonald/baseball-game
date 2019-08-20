@@ -1,5 +1,6 @@
 import React from "react";
-import Game, { Team } from "../models/Game";
+import Game from "../models/Game";
+import Team from "../models/Team";
 import { standings } from "../stats";
 
 type StandingsProps = {

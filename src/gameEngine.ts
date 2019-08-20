@@ -1,4 +1,5 @@
-import Game, { Team } from "./models/Game";
+import Game from "./models/Game";
+import Team from "./models/Team";
 import { PlayerID } from "./models/Player";
 import Play from "./models/Play";
 import ActionCreator from "./actions/ActionCreator";

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Game, { Team } from "../models/Game";
+import Game from "../models/Game";
+import Team from "../models/Team";
 
 import useInterval from "../useInterval";
 
