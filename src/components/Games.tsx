@@ -4,6 +4,8 @@ import Team from "../models/Team";
 
 import useInterval from "../useInterval";
 
+import scheduler from "../scheduling/bergerTablesScheduler";
+
 import {
   createGame,
   simulateAction,
@@ -20,22 +22,45 @@ import TopPlayers from "./TopPlayers";
 import FilterByTeam from "./FilterByTeam";
 
 const teamNames = [
-  "Orioles",
-  "Blue Jays",
+  // "Unicorns",
+  // "Toronto",
+  // "Dinos",
+  // "Toronto Raptors",
+  // "Dragons",
+  // "Christmas Trees",
+  // "Stars",
+  // "Jurassic Park",
+  // "Flowers",
+  // "Planets",
+  // "Mars",
+  // "Earth",
+  // "Sun",
+  // "Sunny",
+  // "Adams",
+  // "Alyssas",
+  // "Tims",
+  // "Timothys",
+  // "Robyns",
+  // "Ladybugs",
+  // "Bugs"
+
+  // "Orioles",
+  // "Blue Jays",
   "Red Sox",
   "Yankees",
   "Tigers",
-  "White Sox",
+  // "White Sox",
   "Giants",
   "Dodgers",
   "Cubs",
   "Mets",
-  "Nationals",
-  "Rays",
-  "Marlins",
-  "Braves",
-  "Phillies",
-  "Astros"
+  "Pirates"
+  // "Nationals",
+  // "Rays",
+  // "Marlins",
+  // "Braves",
+  // "Phillies",
+  // "Astros"
 ];
 
 const teams: Team[] = teamNames.map(teamName => ({
@@ -43,23 +68,20 @@ const teams: Team[] = teamNames.map(teamName => ({
   roster: _.range(9).map(i => `${teamName} Player ${i + 1}`)
 }));
 
-const initialGames = _.range(2).flatMap(() => [
-  ..._.range(3).flatMap(() =>
-    _.range(teams.length / 2).map(i =>
-      createGame(teams[i * 2], teams[i * 2 + 1])
-    )
-  ),
-  ..._.range(3).flatMap(() =>
-    _.range(teams.length / 2).map(i =>
-      createGame(teams[i], teams[i + teams.length / 2])
-    )
-  ),
-  ..._.range(3).flatMap(() =>
-    _.range(teams.length / 2).map(i =>
-      createGame(teams[i], teams[teams.length - i - 1])
-    )
-  )
-]);
+const teamByNames = _.keyBy(teams, team => team.name);
+
+const rounds = scheduler(teamNames);
+
+const initialGames = _.range(6).flatMap(() =>
+  rounds.flatMap(round => {
+    return _.range(3).flatMap(() => {
+      return round.flatMap(matchup => {
+        const [team1, team2] = matchup;
+        return createGame(teamByNames[team1], teamByNames[team2]);
+      });
+    });
+  })
+);
 
 export default function Games() {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -87,6 +109,19 @@ export default function Games() {
         return game;
       })
     );
+  }
+
+  function simulateSingleGame() {
+    const completedGames = games.filter(isGameOver);
+    const [gameToComplete, ...otherGames] = games.filter(
+      game => !isGameOver(game)
+    );
+
+    setGames([
+      ...completedGames,
+      simulateGame(gameToComplete, createDiceAction),
+      ...otherGames
+    ]);
   }
 
   function simulateGames() {
@@ -137,10 +172,10 @@ export default function Games() {
       </button> */}
       <button
         //onClick={() => setGame(simulateGame(game, createDiceAction))}
-        onClick={simulateGames}
+        onClick={simulateSingleGame}
         //onClick={() => setSimulating(true)}
       >
-        Simulate Games
+        Simulate Game
       </button>
       <input
         type="number"
