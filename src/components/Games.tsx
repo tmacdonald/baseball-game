@@ -15,9 +15,8 @@ import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
 import Standings from "./Standings";
-import FilterByTeamGames from "./FilterByTeamGames";
-import PlayerStatistics from "./PlayerStatistics";
 import TopPlayers from "./TopPlayers";
+import FilterByTeam from "./FilterByTeam";
 
 const teamNames = [
   "Orioles",
@@ -99,22 +98,35 @@ export default function Games() {
 
   return (
     <>
-      <FilterByTeamGames games={games} teams={teams}>
-        {filteredGames => (
-          <>
-            {filteredGames.map(game => (
-              <GameSummary game={game} />
-            ))}
-          </>
-        )}
-      </FilterByTeamGames>
+      <FilterByTeam teams={teams}>
+        {selectedTeam => {
+          const filteredGames = !!selectedTeam
+            ? games.filter(
+                game =>
+                  game.teams.filter(team => team.name === selectedTeam).length >
+                  0
+              )
+            : games;
+          const filteredTeams = !!selectedTeam
+            ? teams.filter(team => team.name === selectedTeam)
+            : teams;
+          return (
+            <>
+              {filteredGames.map(game => (
+                <GameSummary game={game} />
+              ))}
+              <Standings teams={teams} games={games} />
+              <TopPlayers
+                games={filteredGames}
+                players={filteredTeams.flatMap(team => team.roster)}
+                numberOfPlayersToShow={20}
+              />
+            </>
+          );
+        }}
+      </FilterByTeam>
+      {/* <FilterByTeamGames games={games} teams={teams} /> */}
 
-      <Standings teams={teams} games={games} />
-      <TopPlayers
-        games={games}
-        players={teams.flatMap(team => team.roster)}
-        numberOfPlayersToShow={20}
-      />
       <button onClick={simulateAtBat}>Simulate at bat</button>
       {/* <button
         disabled={gameIsOver}
