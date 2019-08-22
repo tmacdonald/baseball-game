@@ -1,4 +1,7 @@
+import Team from "./Team";
+
 type TeamRecord = {
+  team: Team;
   wins: number;
   losses: number;
 };

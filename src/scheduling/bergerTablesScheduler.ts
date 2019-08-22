@@ -23,12 +23,16 @@ const bergerTablesScheduler: RoundRobinScheduler = function(teams: TeamID[]) {
   let columnB = teams.slice(gamesPerRound);
   const fixed = teams[0];
 
-  return _.range(numberOfRounds).map(() => {
+  return _.range(numberOfRounds).map((entry, i) => {
     const round = _.range(gamesPerRound).reduce(
       (matchups: Matchup[], _: number, k: number): Matchup[] => {
         const team1 = columnA[k];
         const team2 = columnB[k];
         if (team1 !== dummy && team2 !== dummy) {
+          // special case so that the first team in the list isn't always the away team
+          if (k === 0 && i % 2 === 1) {
+            return [...matchups, [team2, team1]];
+          }
           return [...matchups, [team1, team2]];
         }
         return matchups;

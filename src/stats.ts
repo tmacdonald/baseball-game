@@ -82,10 +82,11 @@ interface Statistics {
   battingAverage: number;
   rbis: number;
   walks: number;
+  runs: number;
 }
 interface PlayerStatistics extends Statistics {
   player: PlayerID;
-  runs: number;
+  playerRuns: number;
 }
 
 function isBatter(player: PlayerID): (play: Play) => boolean {
@@ -105,6 +106,9 @@ function statsByPlays(plays: Play[]): Statistics {
     .filter(a => isHit(a) || isWalk(a))
     .map(play => play.runs.length)
     .reduce(sum, 0);
+
+  const runs = plays.map(play => play.runs.length).reduce(sum, 0);
+
   const walks = plays.filter(isWalk).length;
 
   const atBats = plays.filter(isAtBat).length;
@@ -118,6 +122,7 @@ function statsByPlays(plays: Play[]): Statistics {
     triples,
     homeRuns,
     hits,
+    runs,
     rbis,
     walks,
     battingAverage
@@ -132,7 +137,7 @@ function playerStatsByPlays(plays: Play[], player: PlayerID): PlayerStatistics {
 
   return {
     player,
-    runs,
+    playerRuns: runs,
     ...playerStatsByPlays
   };
 }
@@ -161,10 +166,72 @@ interface TeamStandings extends TeamRecord {
   runsAgainst: number;
 }
 
+const isTeam = (team: Team) => (game: Game) =>
+  game.teams.filter(gameTeam => team.name === gameTeam.name).length > 0;
+
+export function teamRecord(teams: Team[], games: Game[]): TeamRecord[] {
+  return teams.map(team => {
+    const teamGames = games.filter(isTeam(team));
+    const completedGames = teamGames.filter(isGameOver);
+    const wins = completedGames.filter(game => {
+      const [awayTeam, homeTeam] = game.teams;
+      const [awayRuns, homeRuns] = runs(game);
+      return (
+        (awayTeam.name === team.name && awayRuns > homeRuns) ||
+        (homeTeam.name === team.name && homeRuns > awayRuns)
+      );
+    }).length;
+    const losses = completedGames.length - wins;
+    return {
+      team,
+      wins,
+      losses
+    };
+  });
+}
+
+export function homeTeamRecord(teams: Team[], games: Game[]): TeamRecord[] {
+  const isHomeTeam = (team: Team) => (game: Game) =>
+    game.teams[1].name === team.name;
+
+  return teams.map(team => {
+    const teamGames = games.filter(isHomeTeam(team));
+    const completedGames = teamGames.filter(isGameOver);
+    const wins = completedGames.filter(game => {
+      const [awayRuns, homeRuns] = runs(game);
+      return homeRuns > awayRuns;
+    }).length;
+    const losses = completedGames.length - wins;
+    return {
+      team,
+      wins,
+      losses
+    };
+  });
+}
+
+export function awayTeamRecord(teams: Team[], games: Game[]): TeamRecord[] {
+  const isHomeTeam = (team: Team) => (game: Game) =>
+    game.teams[0].name === team.name;
+
+  return teams.map(team => {
+    const teamGames = games.filter(isHomeTeam(team));
+    const completedGames = teamGames.filter(isGameOver);
+    const wins = completedGames.filter(game => {
+      const [awayRuns, homeRuns] = runs(game);
+      return homeRuns < awayRuns;
+    }).length;
+    const losses = completedGames.length - wins;
+    return {
+      team,
+      wins,
+      losses
+    };
+  });
+}
+
 function teamStats(team: Team, games: Game[]): TeamStandings {
-  const isTeam = (game: Game) =>
-    game.teams.filter(gameTeam => team.name === gameTeam.name).length > 0;
-  const teamGames = games.filter(isTeam);
+  const teamGames = games.filter(isTeam(team));
   const completedGames = teamGames.filter(isGameOver);
   const wins = completedGames.filter(game => {
     const [awayTeam, homeTeam] = game.teams;

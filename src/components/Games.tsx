@@ -33,12 +33,17 @@ const teamByNames = _.keyBy(teams, team => team.name);
 
 const rounds = scheduler(teamNames);
 
-const initialGames = _.range(6).flatMap(() =>
+const initialGames = _.range(6).flatMap((j, i) =>
   rounds.flatMap(round => {
     return _.range(3).flatMap(() => {
       return round.flatMap(matchup => {
         const [team1, team2] = matchup;
-        return createGame(teamByNames[team1], teamByNames[team2]);
+
+        // Switches home/away matchup per round repetition to avoid unbalanced schedule
+        const awayTeam = i % 2 === 0 ? team1 : team2;
+        const homeTeam = i % 2 === 0 ? team2 : team1;
+
+        return createGame(teamByNames[awayTeam], teamByNames[homeTeam]);
       });
     });
   })
