@@ -5,6 +5,7 @@ import { PlayerID } from "./models/Player";
 import { splitGameByTeam, isGameOver } from "./gameEngine";
 import { single, double, triple, homeRun, error, walk } from "./actions";
 import _ from "lodash";
+import TeamRecord from "./models/TeamRecord";
 
 function sum(x: number, y: number) {
   return x + y;
@@ -71,8 +72,7 @@ export function errors(game: Game): [number, number] {
   return [homeErrors, awayErrors];
 }
 
-interface PlayerStatistics {
-  player: PlayerID;
+interface Statistics {
   atBats: number;
   singles: number;
   doubles: number;
@@ -80,9 +80,12 @@ interface PlayerStatistics {
   homeRuns: number;
   hits: number;
   battingAverage: number;
-  runs: number;
   rbis: number;
   walks: number;
+}
+interface PlayerStatistics extends Statistics {
+  player: PlayerID;
+  runs: number;
 }
 
 function isBatter(player: PlayerID): (play: Play) => boolean {
@@ -91,41 +94,46 @@ function isBatter(player: PlayerID): (play: Play) => boolean {
   };
 }
 
-function playerStatsByPlays(plays: Play[], player: PlayerID): PlayerStatistics {
-  const playerPlays = plays.filter(isBatter(player));
-  const singles = playerPlays.filter(play => play.action === single.name)
-    .length;
-  const doubles = playerPlays.filter(play => play.action === double.name)
-    .length;
-  const triples = playerPlays.filter(play => play.action === triple.name)
-    .length;
-  const homeRuns = playerPlays.filter(play => play.action === homeRun.name)
-    .length;
-  const hits = playerPlays.filter(isHit).length;
-  const runs = plays.flatMap(play => play.runs).filter(run => run === player)
-    .length;
-  const rbis = playerPlays
+function statsByPlays(plays: Play[]): Statistics {
+  const singles = plays.filter(play => play.action === single.name).length;
+  const doubles = plays.filter(play => play.action === double.name).length;
+  const triples = plays.filter(play => play.action === triple.name).length;
+  const homeRuns = plays.filter(play => play.action === homeRun.name).length;
+  const hits = plays.filter(isHit).length;
+
+  const rbis = plays
     .filter(a => isHit(a) || isWalk(a))
     .map(play => play.runs.length)
     .reduce(sum, 0);
-  const walks = playerPlays.filter(isWalk).length;
+  const walks = plays.filter(isWalk).length;
 
-  const atBats = playerPlays.filter(isAtBat).length;
+  const atBats = plays.filter(isAtBat).length;
 
   const battingAverage = atBats > 0 ? _.round(hits / atBats, 3) : 0;
 
   return {
-    player,
     atBats,
     singles,
     doubles,
     triples,
     homeRuns,
     hits,
-    runs,
     rbis,
     walks,
     battingAverage
+  };
+}
+
+function playerStatsByPlays(plays: Play[], player: PlayerID): PlayerStatistics {
+  const playerPlays = plays.filter(isBatter(player));
+  const playerStatsByPlays = statsByPlays(playerPlays);
+  const runs = plays.flatMap(play => play.runs).filter(run => run === player)
+    .length;
+
+  return {
+    player,
+    runs,
+    ...playerStatsByPlays
   };
 }
 
@@ -143,10 +151,12 @@ export function playerStatisticsByGames(
   return playerStatsByPlays(games.flatMap(game => game.plays), player);
 }
 
-interface TeamStandings {
+export function statisticsByGames(games: Game[]): Statistics {
+  return statsByPlays(games.flatMap(game => game.plays));
+}
+
+interface TeamStandings extends TeamRecord {
   team: Team;
-  wins: number;
-  losses: number;
   runsScored: number;
   runsAgainst: number;
 }

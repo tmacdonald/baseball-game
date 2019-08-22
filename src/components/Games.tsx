@@ -14,6 +14,7 @@ import {
 } from "../gameEngine";
 
 import GameSummary from "./GameSummary";
+import GamesDebugger from "./GamesDebugger";
 import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
@@ -21,47 +22,7 @@ import Standings from "./Standings";
 import TopPlayers from "./TopPlayers";
 import FilterByTeam from "./FilterByTeam";
 
-const teamNames = [
-  // "Unicorns",
-  // "Toronto",
-  // "Dinos",
-  // "Toronto Raptors",
-  // "Dragons",
-  // "Christmas Trees",
-  // "Stars",
-  // "Jurassic Park",
-  // "Flowers",
-  // "Planets",
-  // "Mars",
-  // "Earth",
-  // "Sun",
-  // "Sunny",
-  // "Adams",
-  // "Alyssas",
-  // "Tims",
-  // "Timothys",
-  // "Robyns",
-  // "Ladybugs",
-  // "Bugs"
-
-  // "Orioles",
-  // "Blue Jays",
-  "Red Sox",
-  "Yankees",
-  "Tigers",
-  // "White Sox",
-  "Giants",
-  "Dodgers",
-  "Cubs",
-  "Mets",
-  "Pirates"
-  // "Nationals",
-  // "Rays",
-  // "Marlins",
-  // "Braves",
-  // "Phillies",
-  // "Astros"
-];
+const teamNames = ["A", "B", "C", "D", "E", "F"];
 
 const teams: Team[] = teamNames.map(teamName => ({
   name: teamName,
@@ -148,40 +109,23 @@ export default function Games() {
             : teams;
           return (
             <>
-              {filteredGames.map(game => (
-                <GameSummary game={game} />
-              ))}
               <Standings teams={teams} games={games} />
+              <button onClick={simulateAtBat}>Simulate at bat</button>
+              <button onClick={simulateSingleGame}>Simulate Game</button>
+              <button onClick={simulateGames}>Simulate All Games</button>
               <TopPlayers
                 games={filteredGames}
                 players={filteredTeams.flatMap(team => team.roster)}
                 numberOfPlayersToShow={20}
               />
+              <GamesDebugger games={filteredGames} />
+              {filteredGames.map(game => (
+                <GameSummary game={game} />
+              ))}
             </>
           );
         }}
       </FilterByTeam>
-      {/* <FilterByTeamGames games={games} teams={teams} /> */}
-
-      <button onClick={simulateAtBat}>Simulate at bat</button>
-      {/* <button
-        disabled={gameIsOver}
-        onClick={() => setGame(simulateInning(game, createDiceAction))}
-      >
-        Simulate Inning
-      </button> */}
-      <button
-        //onClick={() => setGame(simulateGame(game, createDiceAction))}
-        onClick={simulateSingleGame}
-        //onClick={() => setSimulating(true)}
-      >
-        Simulate Game
-      </button>
-      <input
-        type="number"
-        value={ms}
-        onChange={e => setMs(parseInt(e.target.value))}
-      />
     </>
   );
 }
