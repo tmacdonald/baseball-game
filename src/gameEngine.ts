@@ -16,7 +16,8 @@ export function createGame(awayTeam: Team, homeTeam: Team): Game {
     teams: [awayTeam, homeTeam],
     rosters: [awayTeam.roster, homeTeam.roster],
     battingOrder: [awayTeam.roster, homeTeam.roster],
-    plays: []
+    plays: [],
+    complete: false
   };
 }
 
@@ -55,6 +56,10 @@ function outs(plays: Play[]) {
 }
 
 export function isGameOver(game: Game): boolean {
+  return game.complete;
+}
+
+function checkIfGameIsOver(game: Game): boolean {
   const { plays } = game;
 
   const [awayPlays, homePlays] = splitPlaysByTeam(plays);
@@ -163,12 +168,15 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     action: action.name
   };
 
-  //console.log(play);
-
-  return {
+  const updatedGame = {
     ...game,
     battingOrder: updateBattingOrder(battingOrder, top),
     plays: [...plays, play]
+  };
+
+  return {
+    ...updatedGame,
+    complete: checkIfGameIsOver(updatedGame)
   };
 }
 

@@ -7,4 +7,5 @@ export default interface Game {
   rosters: [PlayerID[], PlayerID[]];
   battingOrder: PlayerID[][];
   plays: Play[];
+  complete: boolean;
 }
