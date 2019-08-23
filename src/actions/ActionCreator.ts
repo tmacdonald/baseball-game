@@ -1,6 +1,7 @@
 import Action from "./Action";
 import Bases from "../models/Bases";
+import { PlayerID } from "../models/Player";
 
 export default interface ActionCreator {
-  (bases: Bases, numberOfOuts: number): Action;
+  (batter: PlayerID, bases: Bases, numberOfOuts: number): Action;
 }

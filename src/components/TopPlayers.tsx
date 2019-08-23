@@ -42,7 +42,7 @@ export default function TopPlayersStatistics({
               <td>{stats.player}</td>
               <td>{stats.atBats}</td>
               <td>{stats.hits}</td>
-              <td>{stats.runs}</td>
+              <td>{stats.playerRuns}</td>
               <td>{stats.rbis}</td>
               <td>{stats.battingAverage}</td>
               <td>{stats.doubles}</td>

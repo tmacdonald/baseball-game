@@ -1,4 +1,5 @@
 import Action from "./actions/Action";
+import ActionCreator from "./actions/ActionCreator";
 import Bases from "./models/Bases";
 import {
   walk,
@@ -14,7 +15,7 @@ import {
   doublePlay
 } from "./actions";
 import _ from "lodash";
-import { PlayerID } from "./models/Player";
+import Player, { PlayerID } from "./models/Player";
 
 type Rule = {
   diceRoll: [number, number];
@@ -45,22 +46,30 @@ const rules: Rule[] = [
   { diceRoll: [6, 6], action: triple }
 ];
 
-export default function diceActionCreator(
-  player: PlayerID,
-  bases: Bases,
-  numberOfOuts: number
-): Action {
-  const diceRoll = _.range(2).map(() => Math.ceil(Math.random() * 6));
-  diceRoll.sort((a, b) => (a < b ? -1 : 1));
+export default function actionCreatorWrapper(players: Player[]): ActionCreator {
+  function actionCreator(
+    playerID: PlayerID,
+    bases: Bases,
+    numberOfOuts: number
+  ): Action {
+    const [player] = players.filter(p => p.playerID === playerID);
+    const diceRoll1 = Math.ceil(player.skill * 6);
+    const diceRoll2 = _.range(1).map(() => Math.ceil(Math.random() * 6));
+    const diceRoll = [diceRoll1, ...diceRoll2];
+    diceRoll.sort((a, b) => (a < b ? -1 : 1));
 
-  const rule = _.find(
-    rules,
-    roll => diceRoll[0] === roll.diceRoll[0] && diceRoll[1] === roll.diceRoll[1]
-  );
-  if (rule !== undefined) {
-    if (rule.action.isPossible(bases, numberOfOuts)) {
-      return rule.action;
+    const rule = _.find(
+      rules,
+      roll =>
+        diceRoll[0] === roll.diceRoll[0] && diceRoll[1] === roll.diceRoll[1]
+    );
+    if (rule !== undefined) {
+      if (rule.action.isPossible(bases, numberOfOuts)) {
+        return rule.action;
+      }
     }
+    return groundOut;
   }
-  return groundOut;
+
+  return actionCreator;
 }

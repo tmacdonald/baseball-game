@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Game from "../models/Game";
 import Team from "../models/Team";
+import Player from "../models/Player";
 
 import useInterval from "../useInterval";
 
@@ -18,22 +19,38 @@ import GamesDebugger from "./GamesDebugger";
 import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
+import createDiceActionCreator from "../SkilledDiceActionCreator";
 import Standings from "./Standings";
 import TopPlayers from "./TopPlayers";
 import FilterByTeam from "./FilterByTeam";
 
-const teamNames = ["A", "B", "C", "D", "E", "F"];
+const teamNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+
+const players: Player[] = [];
 
 const teams: Team[] = teamNames.map(teamName => ({
   name: teamName,
-  roster: _.range(9).map(i => `${teamName} Player ${i + 1}`)
+  roster: _.range(9).map(i => {
+    const playerID = `${teamName} Player ${i + 1}`;
+    const player: Player = {
+      playerID,
+      firstName: `${teamName} Player`,
+      lastName: `${i + 1}`,
+      skill: Math.random()
+    };
+    players.push(player);
+    return playerID;
+  })
 }));
+
+console.log(players);
+//const createDiceAction = createDiceActionCreator(players);
 
 const teamByNames = _.keyBy(teams, team => team.name);
 
 const rounds = scheduler(teamNames);
 
-const initialGames = _.range(6).flatMap((j, i) =>
+const initialGames = _.range(4).flatMap((j, i) =>
   rounds.flatMap(round => {
     return _.range(3).flatMap(() => {
       return round.flatMap(matchup => {

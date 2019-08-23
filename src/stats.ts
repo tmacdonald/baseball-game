@@ -137,8 +137,8 @@ function playerStatsByPlays(plays: Play[], player: PlayerID): PlayerStatistics {
 
   return {
     player,
-    playerRuns: runs,
-    ...playerStatsByPlays
+    ...playerStatsByPlays,
+    playerRuns: runs
   };
 }
 

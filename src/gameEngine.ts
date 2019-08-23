@@ -149,9 +149,9 @@ export function simulateAction(game: Game, createAction: ActionCreator): Game {
     numberOfOuts
   } = getInningInformation(game);
 
-  const action = createAction(beforeBases, numberOfOuts);
-
   const batter = getNextBatter(battingOrder, top);
+
+  const action = createAction(batter, beforeBases, numberOfOuts);
 
   const actionOutcome = action.perform(batter, beforeBases);
 
