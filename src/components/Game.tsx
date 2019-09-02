@@ -14,6 +14,7 @@ import BoxScore from "./BoxScore";
 import createDiceAction from "../DiceActionCreator";
 import ScrubbedGame from "./ScrubbedGame";
 import GamePlayLog from "./GamePlayLog";
+import CurrentBases from "./CurrentBases";
 
 const orioles = {
   name: "Orioles",
@@ -50,33 +51,36 @@ export default function Game() {
         {(scrubbedGame, control) => (
           <>
             <BoxScore game={scrubbedGame} />
+            <CurrentBases game={scrubbedGame} />
             {control}
             <GamePlayLog game={scrubbedGame} />
           </>
         )}
       </ScrubbedGame>
 
-      <button disabled={gameIsOver} onClick={simulateAtBat}>
-        Simulate at bat
-      </button>
-      <button
-        disabled={gameIsOver}
-        onClick={() => setGame(simulateInning(game, createDiceAction))}
-      >
-        Simulate Inning
-      </button>
-      <button
-        disabled={gameIsOver}
-        //onClick={() => setGame(simulateGame(game, createDiceAction))}
-        onClick={() => setSimulating(true)}
-      >
-        Simulate Game
-      </button>
-      <input
-        type="number"
-        value={ms}
-        onChange={e => setMs(parseInt(e.target.value))}
-      />
+      <div>
+        <button disabled={gameIsOver} onClick={simulateAtBat}>
+          Simulate at bat
+        </button>
+        <button
+          disabled={gameIsOver}
+          onClick={() => setGame(simulateInning(game, createDiceAction))}
+        >
+          Simulate Inning
+        </button>
+        <button
+          disabled={gameIsOver}
+          //onClick={() => setGame(simulateGame(game, createDiceAction))}
+          onClick={() => setSimulating(true)}
+        >
+          Simulate Game
+        </button>
+        <input
+          type="number"
+          value={ms}
+          onChange={e => setMs(parseInt(e.target.value))}
+        />
+      </div>
     </>
   );
 }

@@ -19,7 +19,7 @@ import GamesDebugger from "./GamesDebugger";
 import _ from "lodash";
 
 import createDiceAction from "../DiceActionCreator";
-import createDiceActionCreator from "../SkilledDiceActionCreator";
+//import createDiceActionCreator from "../SkilledDiceActionCreator";
 import Standings from "./Standings";
 import TopPlayers from "./TopPlayers";
 import FilterByTeam from "./FilterByTeam";
@@ -43,7 +43,6 @@ const teams: Team[] = teamNames.map(teamName => ({
   })
 }));
 
-console.log(players);
 //const createDiceAction = createDiceActionCreator(players);
 
 const teamByNames = _.keyBy(teams, team => team.name);
@@ -100,11 +99,13 @@ export default function Games() {
       game => !isGameOver(game)
     );
 
-    setGames([
-      ...completedGames,
-      simulateGame(gameToComplete, createDiceAction),
-      ...otherGames
-    ]);
+    if (!!gameToComplete) {
+      setGames([
+        ...completedGames,
+        simulateGame(gameToComplete, createDiceAction),
+        ...otherGames
+      ]);
+    }
   }
 
   function simulateGames() {

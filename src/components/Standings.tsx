@@ -2,10 +2,11 @@ import React from "react";
 import Game from "../models/Game";
 import Team from "../models/Team";
 import {
-  standings,
   teamRecord,
   homeTeamRecord,
-  awayTeamRecord
+  awayTeamRecord,
+  streak,
+  lastNGamesRecord
 } from "../stats";
 
 type StandingsProps = {
@@ -21,6 +22,8 @@ export default function Standings({ teams, games }: StandingsProps) {
 
   const homeRecords = homeTeamRecord(teams, games);
   const awayRecords = awayTeamRecord(teams, games);
+  const last10GamesRecords = lastNGamesRecord(teams, games, 10);
+  const streaks = streak(teams, games);
 
   const firstPlaceTeam = calculatedStandings[0];
 
@@ -37,6 +40,8 @@ export default function Standings({ teams, games }: StandingsProps) {
 
           <th>Home record</th>
           <th>Away record</th>
+          <th>Last 10 Games</th>
+          <th>Streak</th>
         </tr>
       </thead>
       <tbody>
@@ -54,6 +59,16 @@ export default function Standings({ teams, games }: StandingsProps) {
           const [awayRecord] = awayRecords.filter(
             record => record.team.name === teamStandings.team.name
           );
+          const [last10GamesRecord] = last10GamesRecords.filter(
+            record => record.team.name === teamStandings.team.name
+          );
+
+          const [streak] = streaks.filter(
+            streak => streak.team.name === teamStandings.team.name
+          );
+          const streakDescription =
+            streak.wins > 0 ? `W${streak.wins}` : `L${streak.losses}`;
+
           return (
             <tr>
               <td>{teamStandings.team.name}</td>
@@ -66,8 +81,10 @@ export default function Standings({ teams, games }: StandingsProps) {
               <td>
                 {awayRecord.wins} - {awayRecord.losses}
               </td>
-              {/* <td>{teamStandings.runsScored}</td>
-              <td>{teamStandings.runsAgainst}</td> */}
+              <td>
+                {last10GamesRecord.wins} - {last10GamesRecord.losses}
+              </td>
+              <td>{streakDescription}</td>
             </tr>
           );
         })}

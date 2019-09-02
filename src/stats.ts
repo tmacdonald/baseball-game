@@ -190,6 +190,33 @@ export function teamRecord(teams: Team[], games: Game[]): TeamRecord[] {
   });
 }
 
+export function lastNGamesRecord(
+  teams: Team[],
+  games: Game[],
+  numberOfGames: number
+): TeamRecord[] {
+  return teams.map(team => {
+    const teamGames = games.filter(isTeam(team));
+    const completedGames = teamGames.filter(isGameOver);
+    const lastNGames = _.takeRight(completedGames, numberOfGames);
+
+    const wins = lastNGames.filter(game => {
+      const [awayTeam, homeTeam] = game.teams;
+      const [awayRuns, homeRuns] = runs(game);
+      return (
+        (awayTeam.name === team.name && awayRuns > homeRuns) ||
+        (homeTeam.name === team.name && homeRuns > awayRuns)
+      );
+    }).length;
+    const losses = lastNGames.length - wins;
+    return {
+      team,
+      wins,
+      losses
+    };
+  });
+}
+
 export function homeTeamRecord(teams: Team[], games: Game[]): TeamRecord[] {
   const isHomeTeam = (team: Team) => (game: Game) =>
     game.teams[1].name === team.name;
@@ -222,6 +249,51 @@ export function awayTeamRecord(teams: Team[], games: Game[]): TeamRecord[] {
       return homeRuns < awayRuns;
     }).length;
     const losses = completedGames.length - wins;
+    return {
+      team,
+      wins,
+      losses
+    };
+  });
+}
+
+interface TeamStreak {
+  team: Team;
+  wins: number;
+  losses: number;
+}
+
+interface Score {
+  runsFor: number;
+  runsAgainst: number;
+}
+
+function teamScores(team: Team, games: Game[]): Score[] {
+  return games.map(game => {
+    const [awayTeam, homeTeam] = game.teams;
+    const [awayRuns, homeRuns] = runs(game);
+    return {
+      runsFor: awayTeam.name === team.name ? awayRuns : homeRuns,
+      runsAgainst: awayTeam.name === team.name ? homeRuns : awayRuns
+    };
+  });
+}
+
+export function streak(teams: Team[], games: Game[]): TeamStreak[] {
+  return teams.map(team => {
+    const teamGames = games.filter(isTeam(team));
+    const completedGames = teamGames.filter(isGameOver);
+    const scores = teamScores(team, completedGames);
+
+    const wins = _.takeRightWhile(
+      scores,
+      score => score.runsFor > score.runsAgainst
+    ).length;
+    const losses = _.takeRightWhile(
+      scores,
+      score => score.runsAgainst > score.runsFor
+    ).length;
+
     return {
       team,
       wins,
