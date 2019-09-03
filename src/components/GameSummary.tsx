@@ -13,6 +13,7 @@ export default function GameSummary({ game }: GameSummaryProps) {
 
   return (
     <>
+      <h3>{game.date.toString()}</h3>
       <BoxScore game={game} />
       {showingGameLog && (
         <>

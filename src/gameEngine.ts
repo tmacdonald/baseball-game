@@ -11,8 +11,9 @@ function numberOfOuts(play: Play): number {
   return play.numberOfOuts;
 }
 
-export function createGame(awayTeam: Team, homeTeam: Team): Game {
+export function createGame(awayTeam: Team, homeTeam: Team, date: Date): Game {
   return {
+    date,
     teams: [awayTeam, homeTeam],
     rosters: [awayTeam.roster, homeTeam.roster],
     battingOrder: [awayTeam.roster, homeTeam.roster],

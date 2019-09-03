@@ -11,7 +11,8 @@ import {
   createGame,
   simulateAction,
   simulateGame,
-  isGameOver
+  isGameOver,
+  splitArrayByPredicate
 } from "../gameEngine";
 
 import GameSummary from "./GameSummary";
@@ -24,7 +25,38 @@ import Standings from "./Standings";
 import TopPlayers from "./TopPlayers";
 import FilterByTeam from "./FilterByTeam";
 
-const teamNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+const teamNames = [
+  "Blue Jays",
+  "Yankees",
+  "Red Sox",
+  "Orioles",
+  "Rays",
+  "White Sox",
+  "Astros",
+  "Rangers",
+  "Athletics",
+  "Angels",
+  "Mariners",
+  "Brewers",
+  "Tigers",
+  "Indians",
+  "Twins",
+  "Nationals",
+  "Cubs",
+  "Mets",
+  "Pirates",
+  "Marlins",
+  "Braves",
+  "Dodgers",
+  "Padres",
+  "Diamondbacks",
+  "Cardinals",
+  "Reds",
+  "Giants",
+  "Rockies",
+  "Phillies",
+  "Royals"
+];
 
 const players: Player[] = [];
 
@@ -49,18 +81,30 @@ const teamByNames = _.keyBy(teams, team => team.name);
 
 const rounds = scheduler(teamNames);
 
-const initialGames = _.range(4).flatMap((j, i) =>
+let date = new Date("April 4, 2019");
+let counter = 0;
+
+const initialGames = _.range(2).flatMap((j, i) =>
   rounds.flatMap(round => {
     return _.range(3).flatMap(() => {
-      return round.flatMap(matchup => {
+      const roundMatchups = round.flatMap(matchup => {
         const [team1, team2] = matchup;
 
         // Switches home/away matchup per round repetition to avoid unbalanced schedule
         const awayTeam = i % 2 === 0 ? team1 : team2;
         const homeTeam = i % 2 === 0 ? team2 : team1;
 
-        return createGame(teamByNames[awayTeam], teamByNames[homeTeam]);
+        const gameDate = date;
+
+        return createGame(
+          teamByNames[awayTeam],
+          teamByNames[homeTeam],
+          gameDate
+        );
       });
+      date = new Date(date);
+      date.setDate(date.getDate() + 1);
+      return roundMatchups;
     });
   })
 );
@@ -108,6 +152,28 @@ export default function Games() {
     }
   }
 
+  // TODO Move this import to utils
+  function simulateDate() {
+    const [completedGames, remainingGames] = splitArrayByPredicate(
+      games,
+      isGameOver
+    );
+    const nextGame = _.first(remainingGames);
+
+    if (!!nextGame) {
+      const [gamesToPlay, otherGames] = splitArrayByPredicate(
+        remainingGames,
+        game => game.date === nextGame.date
+      );
+
+      setGames([
+        ...completedGames,
+        ...gamesToPlay.map(game => simulateGame(game, createDiceAction)),
+        ...otherGames
+      ]);
+    }
+  }
+
   function simulateGames() {
     setGames(
       games.map(game => {
@@ -135,6 +201,7 @@ export default function Games() {
               <Standings teams={teams} games={games} />
               <button onClick={simulateAtBat}>Simulate at bat</button>
               <button onClick={simulateSingleGame}>Simulate Game</button>
+              <button onClick={simulateDate}>Simulate Date</button>
               <button onClick={simulateGames}>Simulate All Games</button>
               <TopPlayers
                 games={filteredGames}
@@ -142,9 +209,9 @@ export default function Games() {
                 numberOfPlayersToShow={20}
               />
               <GamesDebugger games={filteredGames} />
-              {filteredGames.map(game => (
+              {/* {filteredGames.map(game => (
                 <GameSummary game={game} />
-              ))}
+              ))} */}
             </>
           );
         }}

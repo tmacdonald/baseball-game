@@ -26,7 +26,7 @@ const bluejays = {
 };
 
 export default function Game() {
-  const [game, setGame] = useState(createGame(orioles, bluejays));
+  const [game, setGame] = useState(createGame(orioles, bluejays, new Date()));
 
   const [simulating, setSimulating] = useState(false);
   const [ms, setMs] = useState(100);
