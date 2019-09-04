@@ -29,10 +29,6 @@ const bergerTablesScheduler: RoundRobinScheduler = function(teams: TeamID[]) {
         const team1 = columnA[k];
         const team2 = columnB[k];
         if (team1 !== dummy && team2 !== dummy) {
-          // special case so that the first team in the list isn't always the away team
-          if (k === 0 && i % 2 === 1) {
-            return [...matchups, [team2, team1]];
-          }
           return [...matchups, [team1, team2]];
         }
         return matchups;
