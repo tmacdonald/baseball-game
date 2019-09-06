@@ -3,6 +3,7 @@ import { PlayerID } from "./Player";
 import Team from "./Team";
 
 export default interface Game {
+  id: string;
   date: Date;
   teams: [Team, Team];
   rosters: [PlayerID[], PlayerID[]];

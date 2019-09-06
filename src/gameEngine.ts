@@ -11,8 +11,12 @@ function numberOfOuts(play: Play): number {
   return play.numberOfOuts;
 }
 
+let i: number = 0;
+
 export function createGame(awayTeam: Team, homeTeam: Team, date: Date): Game {
+  i = i + 1;
   return {
+    id: `${i}`,
     date,
     teams: [awayTeam, homeTeam],
     rosters: [awayTeam.roster, homeTeam.roster],

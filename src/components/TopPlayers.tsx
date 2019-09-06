@@ -17,7 +17,7 @@ export default function TopPlayersStatistics({
 }: TopPlayersStatisticsProps) {
   const stats = players.map(player => playerStatisticsByGames(games, player));
   stats.sort((a, b) => (a.battingAverage > b.battingAverage ? -1 : 1));
-  const topPlayers = _.take(stats, numberOfPlayersToShow);
+  const topPlayers = _.takeRight(stats, numberOfPlayersToShow);
 
   return (
     <table>

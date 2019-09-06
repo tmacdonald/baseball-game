@@ -7,6 +7,8 @@ import useInterval from "../useInterval";
 
 import scheduler from "../scheduling/bergerTablesScheduler";
 
+import analyzer from "../scheduling/analyzer";
+
 import {
   createGame,
   simulateAction,
@@ -39,23 +41,23 @@ const teamNames = [
   "Mariners",
   "Brewers",
   "Tigers",
-  "Indians",
-  "Twins",
-  "Nationals",
-  "Cubs",
-  "Mets",
-  "Pirates",
-  "Marlins",
-  "Braves",
-  "Dodgers",
-  "Padres",
-  "Diamondbacks",
-  "Cardinals",
-  "Reds",
-  "Giants",
-  "Rockies",
-  "Phillies",
-  "Royals"
+  "Indians"
+  // "Twins",
+  // "Nationals",
+  // "Cubs",
+  // "Mets",
+  // "Pirates",
+  // "Marlins",
+  // "Braves",
+  // "Dodgers",
+  // "Padres",
+  // "Diamondbacks",
+  // "Cardinals",
+  // "Reds",
+  // "Giants",
+  // "Rockies",
+  // "Phillies",
+  // "Royals"
 ];
 
 const players: Player[] = [];
@@ -82,7 +84,6 @@ const teamByNames = _.keyBy(teams, team => team.name);
 const rounds = scheduler(teamNames);
 
 let date = new Date("April 4, 2019");
-let counter = 0;
 
 const initialGames = _.range(2).flatMap((j, i) =>
   rounds.flatMap(round => {
@@ -91,8 +92,10 @@ const initialGames = _.range(2).flatMap((j, i) =>
         const [team1, team2] = matchup;
 
         // Switches home/away matchup per round repetition to avoid unbalanced schedule
-        const awayTeam = i % 2 === 0 ? team1 : team2;
-        const homeTeam = i % 2 === 0 ? team2 : team1;
+        // const awayTeam = iterator % 2 === 0 ? team1 : team2;
+        // const homeTeam = iterator % 2 === 0 ? team2 : team1;
+        const awayTeam = team1;
+        const homeTeam = team2;
 
         const gameDate = date;
 
@@ -108,6 +111,9 @@ const initialGames = _.range(2).flatMap((j, i) =>
     });
   })
 );
+
+const gamesAnalysis = analyzer(teams, initialGames);
+console.log(gamesAnalysis);
 
 export default function Games() {
   const [games, setGames] = useState<Game[]>(initialGames);
@@ -208,7 +214,7 @@ export default function Games() {
                 players={filteredTeams.flatMap(team => team.roster)}
                 numberOfPlayersToShow={20}
               />
-              <GamesDebugger games={filteredGames} />
+              <GamesDebugger team={selectedTeam} games={filteredGames} />
               {/* {filteredGames.map(game => (
                 <GameSummary game={game} />
               ))} */}

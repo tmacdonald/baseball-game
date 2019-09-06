@@ -156,8 +156,22 @@ export function playerStatisticsByGames(
   return playerStatsByPlays(games.flatMap(game => game.plays), player);
 }
 
-export function statisticsByGames(games: Game[]): Statistics {
-  return statsByPlays(games.flatMap(game => game.plays));
+export function statisticsByGames(
+  teamName: string | undefined,
+  games: Game[]
+): Statistics {
+  let plays = [];
+  if (teamName !== undefined) {
+    plays = games.flatMap(game => {
+      if (game.teams[0].name === teamName) {
+        return game.plays.filter(play => play.top);
+      }
+      return game.plays.filter(play => !play.top);
+    });
+  } else {
+    plays = games.flatMap(game => game.plays);
+  }
+  return statsByPlays(plays);
 }
 
 interface TeamStandings extends TeamRecord {
