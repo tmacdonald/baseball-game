@@ -1,9 +1,8 @@
 import React, { useState } from "react";
+import { useInterval } from "react-use";
 import Game from "../models/Game";
 import Team from "../models/Team";
 import Player from "../models/Player";
-
-import useInterval from "../useInterval";
 
 import scheduler from "../scheduling/bergerTablesScheduler";
 
@@ -14,7 +13,7 @@ import {
   simulateAction,
   simulateGame,
   isGameOver,
-  splitArrayByPredicate
+  splitArrayByPredicate,
 } from "../gameEngine";
 
 import GameSummary from "./GameSummary";
@@ -41,7 +40,7 @@ const teamNames = [
   "Mariners",
   "Brewers",
   "Tigers",
-  "Indians"
+  "Indians",
   // "Twins",
   // "Nationals",
   // "Cubs",
@@ -62,33 +61,33 @@ const teamNames = [
 
 const players: Player[] = [];
 
-const teams: Team[] = teamNames.map(teamName => ({
+const teams: Team[] = teamNames.map((teamName) => ({
   name: teamName,
-  roster: _.range(9).map(i => {
+  roster: _.range(9).map((i) => {
     const playerID = `${teamName} Player ${i + 1}`;
     const player: Player = {
       playerID,
       firstName: `${teamName} Player`,
       lastName: `${i + 1}`,
-      skill: Math.random()
+      skill: Math.random(),
     };
     players.push(player);
     return playerID;
-  })
+  }),
 }));
 
 //const createDiceAction = createDiceActionCreator(players);
 
-const teamByNames = _.keyBy(teams, team => team.name);
+const teamByNames = _.keyBy(teams, (team) => team.name);
 
 const rounds = scheduler(teamNames);
 
 let date = new Date("April 4, 2019");
 
 const initialGames = _.range(2).flatMap((j, i) =>
-  rounds.flatMap(round => {
+  rounds.flatMap((round) => {
     return _.range(3).flatMap(() => {
-      const roundMatchups = round.flatMap(matchup => {
+      const roundMatchups = round.flatMap((matchup) => {
         const [team1, team2] = matchup;
 
         // Switches home/away matchup per round repetition to avoid unbalanced schedule
@@ -122,7 +121,7 @@ export default function Games() {
   useInterval(() => {
     if (simulating) {
       setGames(
-        games.map(game => {
+        games.map((game) => {
           if (!isGameOver(game)) {
             return simulateAction(game, createDiceAction);
           }
@@ -134,7 +133,7 @@ export default function Games() {
 
   function simulateAtBat() {
     setGames(
-      games.map(game => {
+      games.map((game) => {
         if (!isGameOver(game)) {
           return simulateAction(game, createDiceAction);
         }
@@ -146,14 +145,14 @@ export default function Games() {
   function simulateSingleGame() {
     const completedGames = games.filter(isGameOver);
     const [gameToComplete, ...otherGames] = games.filter(
-      game => !isGameOver(game)
+      (game) => !isGameOver(game)
     );
 
     if (!!gameToComplete) {
       setGames([
         ...completedGames,
         simulateGame(gameToComplete, createDiceAction),
-        ...otherGames
+        ...otherGames,
       ]);
     }
   }
@@ -169,20 +168,20 @@ export default function Games() {
     if (!!nextGame) {
       const [gamesToPlay, otherGames] = splitArrayByPredicate(
         remainingGames,
-        game => game.date === nextGame.date
+        (game) => game.date === nextGame.date
       );
 
       setGames([
         ...completedGames,
-        ...gamesToPlay.map(game => simulateGame(game, createDiceAction)),
-        ...otherGames
+        ...gamesToPlay.map((game) => simulateGame(game, createDiceAction)),
+        ...otherGames,
       ]);
     }
   }
 
   function simulateGames() {
     setGames(
-      games.map(game => {
+      games.map((game) => {
         return simulateGame(game, createDiceAction);
       })
     );
@@ -191,16 +190,16 @@ export default function Games() {
   return (
     <>
       <FilterByTeam teams={teams}>
-        {selectedTeam => {
+        {(selectedTeam) => {
           const filteredGames = !!selectedTeam
             ? games.filter(
-                game =>
-                  game.teams.filter(team => team.name === selectedTeam).length >
-                  0
+                (game) =>
+                  game.teams.filter((team) => team.name === selectedTeam)
+                    .length > 0
               )
             : games;
           const filteredTeams = !!selectedTeam
-            ? teams.filter(team => team.name === selectedTeam)
+            ? teams.filter((team) => team.name === selectedTeam)
             : teams;
           return (
             <>
@@ -211,7 +210,7 @@ export default function Games() {
               <button onClick={simulateGames}>Simulate All Games</button>
               <TopPlayers
                 games={filteredGames}
-                players={filteredTeams.flatMap(team => team.roster)}
+                players={filteredTeams.flatMap((team) => team.roster)}
                 numberOfPlayersToShow={20}
               />
               <GamesDebugger team={selectedTeam} games={filteredGames} />

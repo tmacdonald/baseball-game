@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import useInterval from "../useInterval";
+import { useInterval } from "react-use";
 import _ from "lodash";
 
 import {
   createGame,
   simulateInning,
   simulateAction,
-  isGameOver
+  isGameOver,
 } from "../gameEngine";
 
 import BoxScore from "./BoxScore";
@@ -15,14 +15,15 @@ import createDiceAction from "../DiceActionCreator";
 import ScrubbedGame from "./ScrubbedGame";
 import GamePlayLog from "./GamePlayLog";
 import CurrentBases from "./CurrentBases";
+import GameSummary from "./GameSummary";
 
 const orioles = {
   name: "Orioles",
-  roster: _.range(9).map(i => `Orioles Player ${i + 1}`)
+  roster: _.range(9).map((i) => `Orioles Player ${i + 1}`),
 };
 const bluejays = {
   name: "Blue Jays",
-  roster: _.range(9).map(i => `Blue Jays Player ${i + 1}`)
+  roster: _.range(9).map((i) => `Blue Jays Player ${i + 1}`),
 };
 
 export default function Game() {
@@ -51,9 +52,10 @@ export default function Game() {
         {(scrubbedGame, control) => (
           <>
             <BoxScore game={scrubbedGame} />
-            <CurrentBases game={scrubbedGame} />
+            {/* <CurrentBases game={scrubbedGame} /> */}
             {control}
-            <GamePlayLog game={scrubbedGame} />
+            {/* <GamePlayLog game={scrubbedGame} /> */}
+            <GameSummary game={scrubbedGame} />
           </>
         )}
       </ScrubbedGame>
@@ -78,7 +80,7 @@ export default function Game() {
         <input
           type="number"
           value={ms}
-          onChange={e => setMs(parseInt(e.target.value))}
+          onChange={(e) => setMs(parseInt(e.target.value))}
         />
       </div>
     </>

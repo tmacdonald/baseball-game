@@ -3,12 +3,12 @@ import RoundRobinScheduler from "./RoundRobinScheduler";
 import Matchup from "../models/Matchup";
 import _ from "lodash";
 
-const bergerTablesScheduler: RoundRobinScheduler = function(teams: TeamID[]) {
+const bergerTablesScheduler: RoundRobinScheduler = function (teams: TeamID[]) {
   // Note, this requires that no TeamIDs are blank
   const dummy = "";
 
-  if (teams.some(team => team === "")) {
-    throw "Team of '' is not allowed";
+  if (teams.some((team) => team === "")) {
+    throw new Error("Team of '' is not allowed");
   }
 
   if (teams.length % 2 !== 0) {
